@@ -1,0 +1,112 @@
+.app {
+  box-sizing: border-box;
+ 
+
+  .router_inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 100vh;
+
+    .header {
+      background-color: rgb(245, 245, 245);
+      padding: 0 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      margin-bottom: 1rem;
+
+      .header_inner {
+        max-width: var(--content-width);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 auto;
+        height: 5rem;
+
+        .logo {
+          height: 4rem;
+        }
+
+        .navbar {
+          display: flex;
+          align-items: center;
+          gap: 2rem;
+
+          .navlinks_left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+          }
+
+          .name_wrap {
+ 
+            .dropdown_settings {
+              
+              .title_settings {
+                margin: 0.5rem 0;
+              }
+  
+              .btn_logout_settings {
+                margin-left: 1rem; 
+              }
+            }
+          }
+        }
+
+      }
+    }
+ 
+    .breadcrumbs_wrap {
+      padding: 0 1rem;
+    }
+
+    .breadcrumbs { 
+      max-width: var(--content-width);
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .content_wrap {
+      padding: 0 1rem;
+      flex: 1;
+
+      .content {
+        max-width: var(--content-width);
+        margin: 0 auto;
+        width: 100%;
+      }
+    }
+
+    }
+
+    .footer {
+      padding: 1rem 1rem;
+      z-index: 2;
+      background-color: rgb(30, 30, 30);
+      margin-top: 1rem;
+
+      .footer_inner {
+
+        max-width: var(--content-width);
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .navlinks_left {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .navlink_footer:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+          height: 3rem;
+        }
+      }
+
+    }
+  }

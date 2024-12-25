@@ -1,0 +1,73 @@
+.books {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .navigation {
+        display: flex;
+        gap: 1rem;
+
+        .search {
+            display: flex;
+            gap: 0.5rem;
+            margin-right: auto;
+
+            .search_input {
+                width: 25rem;
+            }
+        }
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-column-gap: 2rem;
+        grid-row-gap: 2rem;
+
+        .card_wrap {
+            overflow: hidden;
+            position: relative;
+            display: block;
+
+            .my_indicator {
+                position: absolute;
+                width: 1rem;
+                height: 1rem;
+                background-color: green;
+                z-index: 1;
+                right: 0;
+                margin: 0.5rem;
+                border: solid 0.125rem rgb(255, 255, 255);
+                border-radius: 1rem;
+            }
+
+            .my_indicator::before {
+                content: '';
+                inset: 0;
+                transform: scale(1);
+            }
+
+            .card {
+
+                div {
+                    .ratio {
+                        max-width: 100% !important;
+                    }
+                }
+
+                .name {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    margin: 0.5rem 0 1rem 0;
+                }
+            }
+
+        }
+    }
+
+    .pagination {
+        margin: 0 auto;
+        margin-top: 1rem;
+    }
+}

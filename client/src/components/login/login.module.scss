@@ -1,0 +1,26 @@
+.form_wrap {
+    max-width: 25rem;
+    margin: 3rem auto 3rem auto;
+    background-color: rgb(250, 250, 250);
+    padding: 2rem;
+
+    .title {
+        margin: 0 0 1rem 0;
+    }
+
+    .input_wrap {
+        margin: 1.5rem 0;
+
+        .input {
+            margin: 0.5rem 0;
+        }
+    }
+
+    .checkbox {
+        margin: 1.5rem 0;
+    }
+
+    .btn {
+        margin-top: 1rem;
+    }
+}
