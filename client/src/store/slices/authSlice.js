@@ -59,7 +59,6 @@ export const apiLogin = createAsyncThunk(
     "auth/apiLogin",
     async (data, { dispatch, rejectWithValue }) => {
         try {
-            console.log(JSON.stringify(data))
             const res = await authApi.Login(JSON.stringify(data))
 
             if (res.data.status == "success") {

@@ -4,10 +4,19 @@ import { notifications } from '@mantine/notifications';
 import handleError from "./error/error.js"
 
 const initialState = {
-    
-    connection: {
-        
-    }
+    books: {
+        books: [],
+        limit: 1,
+        count: 0,
+        connection: {
+            isBooksFetch: true,
+        },
+        booksNotFound: false
+    },
+    // ID: '',
+    // name: '',
+    // image: '',
+    // status: '',
 }
 
 export const booksSlice = createSlice({
@@ -16,44 +25,32 @@ export const booksSlice = createSlice({
     reducers: {},
     extraReducers(builder) {
         builder
-            .addCase(apiIsUser.pending, (state, _) => {
-                state.isAuth = false
-                state.connection.isAuthFetch = true
+            .addCase(apiGetBooks.pending, (state, _) => {
+                state.books.connection.isBooksFetch = true
+                state.books.booksNotFound = false
             })
-            .addCase(apiIsUser.fulfilled, (state, action) => { 
-                if(action.payload.status == "success") {
-                    state.name = action.payload.data.name
-                    state.isAuth = true
+            .addCase(apiGetBooks.fulfilled, (state, action) => {
+                switch(action.payload.status) {
+                    case "no_books":
+                        state.books.booksNotFound = true
+                        break
+                    case "success":
+                        state.books.books = action.payload.data.books
+                        state.books.count = action.payload.data.count
+                        break
                 }
-                state.connection.isAuthFetch = false
-            })
-            .addCase(apiLogin.pending, (state, _) => {
-                state.connection.isLoginingFetch = true
-            })
-            .addCase(apiLogin.fulfilled, (state, _) => { 
-                state.connection.isLoginingFetch = false
-            })
-            .addCase(apiLogin.rejected, (state, _) => { 
-                state.connection.isLoginingFetch = false
+                state.books.connection.isBooksFetch = false
             })
     }
 })
 
-export const apiLogin = createAsyncThunk(
-    "auth/apiLogin",
+export const apiGetBooks = createAsyncThunk(
+    "auth/apiGetBooks",
     async (data, { dispatch, rejectWithValue }) => {
-        try {
-            console.log(JSON.stringify(data))
-            const res = await authApi.Login(JSON.stringify(data))
+        try { 
+            const res = await accountApi.GetBooks(JSON.stringify(data))
 
-            if (res.data.status == "success") {
-                notifications.show({
-                    color: "green",
-                    title: 'Successfully logged in',
-                    position: "bottom-center",
-                })
-            }
-
+            console.log(res.data)
             return res.data
         } catch (err) {
             handleError(dispatch, err)

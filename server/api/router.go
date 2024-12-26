@@ -30,6 +30,7 @@ func Router(router *gin.Engine) *gin.Engine {
 		account := api.Group("/account").Use(m.IsUser())
 		{
 			account.GET("/user", r.GetUser)
+			account.POST("/books/get", r.GetBooks)
 		}
  
 		auth := api.Group("/auth")

@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"fmt"
 	e "server-library/errors"
 	"strings"
 
@@ -19,11 +20,27 @@ func GetBooks(c *gin.Context) {
 
 	args := []interface{}{}
 
-	if data["search"].(string) != "" {
-		query += "SELECT count(*) FROM books "
+	if data["search"].(string) == "" {
+		query += "SELECT count(*) FROM book "
 	} else {
-		query += "SELECT count(*) FROM books WHERE name LIKE ? "
+		query += "SELECT count(*) FROM book WHERE Name LIKE ? "
 		args = append(args, "%"+data["search"].(string)+"%")
+	}
+
+	if data["filter"].(string) != "" && data["filter"].(string) != "All" {
+		if data["search"].(string) != "" {
+				query += "AND Status = "
+			} else {
+				query += "WHERE Status = "
+			}
+			switch data["filter"].(string) {
+			case "Available":
+				query += "'available' "
+			case "Loaned":
+				query += "'loaned' "
+			case "Absent":
+				query += "'absent' "
+		}
 	}
 
 	queryCount, err := db.Query(query, args...)
@@ -42,22 +59,20 @@ func GetBooks(c *gin.Context) {
 		return
 	}
 
-	if data["filter"].(string) != "" {
-		query += "AND status = "
-		switch data["filter"].(string) {
-		case "avaliable":
-			query += "avaliable "
-		case "loned":
-			query += "loaned "
-		case "absent":
-			query += "absent "
-		}
-	}
-
 	query += "LIMIT ? OFFSET ?"
 	args = append(args, int(data["limit"].(float64)), int(data["offset"].(float64)))
 
-	query = strings.Replace(query, "count(*)", "id, name, image", 1)
+	query = strings.Replace(query, "count(*)", "ID_Book, Name, Image, Status", 1)
+
+	fmt.Println(int(data["limit"].(float64)))
+	fmt.Println(int(data["offset"].(float64)))
+
+	fmt.Println(query)
+	fmt.Println(query)
+	fmt.Println(query)
+	fmt.Println(query)
+	fmt.Println(query)
+	fmt.Println(query)
 
 	queryBooks, err := db.Query(query, args...)
 
@@ -67,19 +82,25 @@ func GetBooks(c *gin.Context) {
 	defer queryBooks.Close()
 
 	type Book struct {
-		Id    int    `json:"id"`
-		Name  string `json:"name"`
-		Image string `json:"image"`
+		ID     int    `json:"ID_Book"`
+		Name   string `json:"Name"`
+		Image  string `json:"Image"`
+		Status string `json:"Status"`
 	}
 
 	books := []Book{}
 
 	for queryBooks.Next() {
 		b := Book{}
-		err := queryBooks.Scan(&b.Id, &b.Name, &b.Image)
+		err := queryBooks.Scan(&b.ID, &b.Name, &b.Image, &b.Status)
 		if err != nil {
 			e.Wrap("Cann not scan the 'queryBooks' response", err, c)
 		}
+		fmt.Println(b)
+		fmt.Println(b)
+		fmt.Println(b)
+		fmt.Println(b)
+		fmt.Println(b)
 		books = append(books, b)
 	}
 
@@ -87,7 +108,7 @@ func GetBooks(c *gin.Context) {
 		"status": "success",
 		"data": gin.H{
 			"books": books,
-			"count":    count,
+			"count": count,
 		},
 	})
 }

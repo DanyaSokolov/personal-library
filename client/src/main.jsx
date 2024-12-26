@@ -1,4 +1,3 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router } from "react-router-dom"
 import { MantineProvider, createTheme } from '@mantine/core';
@@ -13,7 +12,6 @@ import { store } from "./store/redux.js"
 const theme = createTheme({})
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <Provider store={store}>
       <MantineProvider theme={theme}>
         <Notifications />
@@ -22,5 +20,4 @@ createRoot(document.getElementById('root')).render(
         </Router>
       </MantineProvider>
     </Provider>
-  </StrictMode>
 )
