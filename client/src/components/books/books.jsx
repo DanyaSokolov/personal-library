@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Button, CloseButton, Select, Card, Image, Text, AspectRatio, Paper, Pagination, Loader } from '@mantine/core';
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import { apiGetBooks } from '../../store/slices/BooksSlice';
 import useAuthRedirect from '../../middleware/isAuth.jsx';
- 
+
+import { Input, Button, CloseButton, Select, Card, Image, Text, AspectRatio, Paper, Pagination, Loader, Modal, Group, Collapse, Box, NumberInput } from '@mantine/core';
 import styles from './books.module.scss';
 import { IconSearch, IconFilterFilled, IconSquareRoundedPlus, IconCaretRightFilled } from '@tabler/icons-react';
+import ImageOff from '/image_off.png'
+import { useDisclosure } from '@mantine/hooks';
+import { DatePickerInput, YearPickerInput } from '@mantine/dates';
 
 const useLocalState = () => {
 
-    const { isAuthDispatch } = useAuthRedirect() 
+    const { isAuthDispatch } = useAuthRedirect()
 
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState('Available');
@@ -20,7 +23,7 @@ const useLocalState = () => {
             connection: { isBooksFetch }
         }
     } = useSelector((state) => state.books);
- 
+
     const dispatchApiGetBooks = async (search, filter, offset, limit) => {
         isAuthDispatch(apiGetBooks, { search, filter, offset, limit })
     }
@@ -51,115 +54,87 @@ const useLocalState = () => {
 
 const Books = () => {
 
-    // const books = [ 
-    //     {
-    //         Name: 'The Shining',
-    //         Image: 'https://upload.wikimedia.org/wikipedia/ru/1/10/%D0%9E%D0%B1%D0%BB%D0%BE%D0%B6%D0%BA%D0%B0_%D0%BA%D0%BD%D0%B8%D0%B3%D0%B8_%22%D0%9D%D0%B0%D0%B2%D0%B0%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F%22%2C_%D0%9C%D0%B0%D0%BA%D1%81_%D0%A4%D1%80%D0%B0%D0%B9.jpg',
-    //         Year_Publish: '1977-01-28',
-    //         House_Publish: 'Doubleday',
-    //         Pages: 447,
-    //         Source: 'Donation',
-    //         Date_Receipt: '2020-05-12',
-    //         Number_Grade: 9,
-    //         Comment: 'Horror classic',
-    //         Date_Last_Status_Change: '2023-10-10',
-    //         Name_Genre: 'Fiction',
-    //         Status: 'available',
-    //         Description: 'A haunted hotel thriller',
-    //         Name_Section: 'Fiction Section',
-    //         Number_Shelf: 1
-    //     },
-    //     {
-    //         Name: 'Harry Potter and the Sorcerer\'s Stone ewfewfew ew few f ewf ew f ew',
-    //         Image: 'https://imo10.labirint.ru/books/935400/cover.jpg/236-0',
-    //         Year_Publish: '1997-06-26',
-    //         House_Publish: 'Bloomsbury',
-    //         Pages: 309,
-    //         Source: 'Purchase',
-    //         Date_Receipt: '2019-08-15',
-    //         Number_Grade: 10,
-    //         Comment: 'Magic and adventure',
-    //         Date_Last_Status_Change: '2023-06-22',
-    //         Name_Genre: 'Fantasy',
-    //         Status: 'loaned',
-    //         Description: 'The first book in the Harry Potter series',
-    //         Name_Section: 'Children Section',
-    //         Number_Shelf: 1
-    //     },
-    //     {
-    //         Name: '1984',
-    //         Image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyjLHjIxokL8jk7WzpVg9dhu3JvnyuQbBQqw&s',
-    //         Year_Publish: '1949-06-08',
-    //         House_Publish: 'Secker & Warburg',
-    //         Pages: 328,
-    //         Source: 'Donation',
-    //         Date_Receipt: '2018-11-05',
-    //         Number_Grade: 8,
-    //         Comment: 'Dystopian novel',
-    //         Date_Last_Status_Change: '2022-12-15',
-    //         Name_Genre: 'Science Fiction',
-    //         Status: 'available',
-    //         Description: 'A critique of totalitarianism',
-    //         Name_Section: 'Science Section',
-    //         Number_Shelf: 1
-    //     },
-    //     {
-    //         Name: 'To Kill a Mockingbird',
-    //         Image: 'https://fotoblik.ru/wp-content/uploads/2023/09/oblozhka-dlia-knigi-2-1.webp',
-    //         Year_Publish: '1960-07-11',
-    //         House_Publish: 'J.B. Lippincott & Co.',
-    //         Pages: 281,
-    //         Source: 'Gift',
-    //         Date_Receipt: '2021-03-10',
-    //         Number_Grade: 10,
-    //         Comment: 'Classic literature',
-    //         Date_Last_Status_Change: '2023-09-05',
-    //         Name_Genre: 'Fiction',
-    //         Status: 'available',
-    //         Description: 'A novel about racial injustice',
-    //         Name_Section: 'Classic Section',
-    //         Number_Shelf: 2
-    //     },
-    //     {
-    //         Name: 'The Hobbit',
-    //         Image: 'https://imo10.labirint.ru/books/925680/cover.jpg/236-0',
-    //         Year_Publish: '1937-09-21',
-    //         House_Publish: 'George Allen & Unwin',
-    //         Pages: 310,
-    //         Source: 'Purchase',
-    //         Date_Receipt: '2022-01-18',
-    //         Number_Grade: 9,
-    //         Comment: 'Fantasy adventure',
-    //         Date_Last_Status_Change: '2023-07-20',
-    //         Name_Genre: 'Fantasy',
-    //         Status: 'absent',
-    //         Description: 'A journey to reclaim treasure from a dragon',
-    //         Name_Section: 'Fantasy Section',
-    //         Number_Shelf: 3
-    //     },
-    //     {
-    //         Name: 'Pride and Prejudice',
-    //         Image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTINy5-amxjxKf6QHby1HiDxgxePhCQ8FacfQ&s',
-    //         Year_Publish: '1813-01-28',
-    //         House_Publish: 'T. Egerton',
-    //         Pages: 279,
-    //         Source: 'Donation',
-    //         Date_Receipt: '2020-11-30',
-    //         Number_Grade: 9,
-    //         Comment: 'Romantic classic',
-    //         Date_Last_Status_Change: '2023-04-12',
-    //         Name_Genre: 'Romance',
-    //         Status: 'available',
-    //         Description: 'A romantic novel about manners and marriage',
-    //         Name_Section: 'Romance Section',
-    //         Number_Shelf: 2
-    //     }
-    // ];
-
     const { isBooksFetch, books, search, setSearch, filter, handleFilter, page, setPage, pagesCount, dispatchApiGetBooks, offset, limit, booksNotFound } = useLocalState()
+
+    const [openedModal, { open, close: closeModal }] = useDisclosure(false);
+
+    const [openedCollapse, { toggle: toggleCollapse }] = useDisclosure(false);
+
+    const [value, setValue] = useState(new Date());
 
     return (
         <div className={styles.books}>
+            <Modal
+             classNames={{
+                title: styles.title,
+            }}
+             className={styles.modal} opened={openedModal} onClose={closeModal} title="Add book">
+                <form className={styles.form}>
+                    <Input.Wrapper className={styles.input_wrap} label="Name">
+                        <Input className={styles.input} placeholder='Enter name' />
+                    </Input.Wrapper>
+                    <Input.Wrapper className={styles.input_wrap} label="Name Author">
+                        <Input className={styles.input} placeholder='Enter name author' />
+                    </Input.Wrapper>
+                    <Input.Wrapper className={styles.input_wrap} label="Image">
+                        <Input className={styles.input} placeholder='Enter image' />
+                    </Input.Wrapper>
+                    <YearPickerInput
+                        label="Year publish"
+                        placeholder="Enter year publish"
+                        value={value}
+                        onChange={setValue}
+                    />
+                    <Input.Wrapper className={styles.input_wrap} label="House publish">
+                        <Input className={styles.input} placeholder='Enter house publish' />
+                    </Input.Wrapper>
+                    <Input.Wrapper className={styles.input_wrap} label="Pages">
+                        <NumberInput min={0} className={styles.input} placeholder='Enter pages' />
+                    </Input.Wrapper>
+                    <Input.Wrapper className={styles.input_wrap} label="Name genre">
+                        <Input className={styles.input} placeholder='Enter name genre' />
+                    </Input.Wrapper>
+                    <Input.Wrapper className={styles.input_wrap} label="Name section">
+                        <Input className={styles.input} placeholder='Enter name section' />
+                    </Input.Wrapper>
+
+                    <Box >
+                        <Group justify="center">
+                            <Button variant='transparent' onClick={toggleCollapse}>More</Button>
+                        </Group>
+
+                        <Collapse in={openedCollapse}>
+                            <DatePickerInput
+                                label="Date receipt"
+                                placeholder="Enter date receipt"
+                                value={value}
+                                onChange={setValue}
+                            />
+                    <Input.Wrapper className={styles.input_wrap} label="Number grade">
+                        <NumberInput NumberInput min={1} max={5} className={styles.input} placeholder='Enter number grade' />
+                    </Input.Wrapper>
+                    <Input.Wrapper className={styles.input_wrap} label="Comment">
+                        <Input className={styles.input} placeholder='Enter comment' />
+                    </Input.Wrapper>
+                    <Input.Wrapper className={styles.input_wrap} label="Description">
+                        <Input className={styles.input} placeholder='Enter description' />
+                    </Input.Wrapper>
+                    <Input.Wrapper className={styles.input_wrap} label="Source">
+                        <Input className={styles.input} placeholder='Enter source' />
+                    </Input.Wrapper>
+                        </Collapse>
+                    </Box>
+
+                    <Button
+                        className={styles.btn_submit}
+                        rightSection={
+                            <IconSquareRoundedPlus size="1rem"
+                            />
+                        }
+                        variant="filled">Add
+                    </Button>
+                </form>
+            </Modal>
             <div className={styles.navigation}>
                 <div className={styles.search}>
                     <Input
@@ -193,45 +168,45 @@ const Books = () => {
                 <Button rightSection={
                     <IconSquareRoundedPlus size="1rem"
                     />
-                } variant="light">Add Book</Button>
+                } onClick={open} variant="light">Add Book</Button>
             </div>
             {!booksNotFound ?
                 !isBooksFetch ?
-                <>
-                    <div className={styles.cards}>
-                        {books?.map((b, i) =>
-                            <Paper className={styles.card_wrap} shadow="sm" radius="md" withBorder>
-                                <div style={{ backgroundColor: b.Status === 'available' ? '#2BDD66' : b.Status === 'loaned' ? '#0063FF' : '#F21616' }} className={styles.my_indicator}></div>
-                                <Card className={styles.card}>
-                                    <Card.Section>
-                                        <AspectRatio classNames={{
-                                            root: styles.ratio,
-                                        }} ratio={1 / 1.5} maw={300} mx="auto">
-                                            <Image
-                                                src={b.Image}
-                                                alt="No image"
-                                            />
-                                        </AspectRatio>
-                                    </Card.Section>
+                    <>
+                        <div className={styles.cards}>
+                            {books?.map((b, i) =>
+                                <Paper className={styles.card_wrap} shadow="sm" radius="md" withBorder>
+                                    <div style={{ backgroundColor: b.Status === 'available' ? '#2BDD66' : b.Status === 'loaned' ? '#0063FF' : '#F21616' }} className={styles.my_indicator}></div>
+                                    <Card className={styles.card}>
+                                        <Card.Section>
+                                            <AspectRatio classNames={{
+                                                root: styles.ratio,
+                                            }} ratio={1 / 1.5} maw={300} mx="auto">
+                                                {b.Image ?
+                                                    <Image src={b.Image} />
+                                                    :
+                                                    <Image src={ImageOff} />}
+                                            </AspectRatio>
+                                        </Card.Section>
 
-                                    <Text className={styles.name} fw={500}>{b.Name}</Text>
-                                    <Button
-                                        rightSection={
-                                            <IconCaretRightFilled size="1rem" />
-                                        }>
-                                        More info
-                                    </Button>
-                                </Card>
-                            </Paper>
-                        )}
-                    </div>
-                    <Pagination total={pagesCount} value={page} onChange={setPage} className={styles.pagination} />
-                </>
-                :
-                <Loader
-                classNames={{
-                    root: styles.loader,
-                }} color="blue" />
+                                        <Text className={styles.name} fw={500}>{b.Name}</Text>
+                                        <Button
+                                            rightSection={
+                                                <IconCaretRightFilled size="1rem" />
+                                            }>
+                                            More info
+                                        </Button>
+                                    </Card>
+                                </Paper>
+                            )}
+                        </div>
+                        <Pagination total={pagesCount} value={page} onChange={setPage} className={styles.pagination} />
+                    </>
+                    :
+                    <Loader
+                        classNames={{
+                            root: styles.loader,
+                        }} color="blue" />
                 :
                 <h3 className={styles.not_found}>Books not found</h3>
             }

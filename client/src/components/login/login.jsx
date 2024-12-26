@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, Checkbox, Button, rem, Paper  } from '@mantine/core';
+import { Input, Checkbox, Button, rem, Paper, PasswordInput  } from '@mantine/core';
 import { apiLogin, apiIsUser } from '../../store/slices/authSlice';
 import { useDispatch, useSelector } from "react-redux"
 
@@ -143,7 +143,7 @@ const Login = () => {
                     />
             </Input.Wrapper>
             <Input.Wrapper className={styles.input_wrap} label="Password" error={errors.password}>
-                <Input className={styles.input} placeholder="Enter password" 
+                <PasswordInput className={styles.input} placeholder="Enter password" 
                 value={form.password}
                 onChange={e => setField('password', e.target.value)}
                 rightSection={errors.password &&
