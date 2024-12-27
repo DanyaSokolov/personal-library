@@ -22,13 +22,11 @@ const useLocalState = () => {
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState('Available');
 
-    var [ininFormAddingInfo, setIninFormAddingInfo] = useState({})
-
     const {
         books: {
             books, count, limit, booksNotFound,
             add_info: { authors, genres, sections },
-            connection: { isBooksFetch, isAddingFetch }
+            connection: { isBooksFetch, isAddingFetch, isBookAddingInfoFetch }
         }
     } = useSelector((state) => state.books);
 
@@ -56,7 +54,7 @@ const useLocalState = () => {
         setPage(1)
     }
 
-    const [openedModal, { open, close: closeModal }] = useDisclosure(false)
+    const [openedModal, { open: openModal, close: closeModal }] = useDisclosure(false)
     const [openedCollapse, { close: closeCollapse, toggle: toggleCollapse }] = useDisclosure(false);
 
     const [form, setForm] = useState({})
@@ -66,6 +64,12 @@ const useLocalState = () => {
         closeModal()
         closeCollapse()
         setForm({})
+        setErrors({})
+    }
+     
+    const handleOpenModal = async () => {
+        openModal()  
+        dispatchApiGetBookAddingInfo()
     }
 
     const setField = (field, value) => {
@@ -141,10 +145,11 @@ const useLocalState = () => {
             if (v === 'pages' || v === 'grade') {
                 form[v] = Number(form[v])
             }
-            if(v === 'genre') {
-                if (!(ininFormAddingInfo.genres.includes(form[v]))) {
-                    Object.assign(formErrors, {name: 'Incorrect name genre'})
-                }
+            if(v === 'genre' && !(genres.includes(form[v]))) {
+                Object.assign(formErrors, {genre: 'Incorrect name genre'})
+            }
+            if(v === 'section' && !(sections.includes(form[v]))) {
+                Object.assign(formErrors, {section: 'Incorrect name section'})
             }
         }
 
@@ -174,19 +179,10 @@ const useLocalState = () => {
         isAuthDispatch(apiGetBookAddingInfo)
     }
 
-    const loadModal = async () => {
-        await dispatchApiGetBookAddingInfo()
-        setIninFormAddingInfo({ authors: authors, genres: genres, sections: sections })
-    }
-
-    useEffect(() => {
-        loadModal()
-    }, [])
-
     return {
         isBooksFetch, books, search, setSearch, filter, handleFilter, page, setPage, pagesCount, offset, limit,
         dispatchApiGetBooks, booksNotFound, openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
-        openedModal, handleCloseModal, open, ininFormAddingInfo, isAddingFetch
+        openedModal, handleCloseModal, handleOpenModal, isAddingFetch, isBookAddingInfoFetch, authors, genres, sections
     }
 
 }
@@ -195,7 +191,7 @@ const Books = () => {
 
     const { isBooksFetch, books, search, setSearch, filter, handleFilter, page, setPage, pagesCount, offset, limit,
         dispatchApiGetBooks, booksNotFound, openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
-        openedModal, handleCloseModal, open, ininFormAddingInfo, isAddingFetch } = useLocalState()
+        openedModal, handleCloseModal, handleOpenModal, isAddingFetch, isBookAddingInfoFetch, authors, genres, sections } = useLocalState()
 
     return (
         <div className={styles.books}>
@@ -205,6 +201,7 @@ const Books = () => {
                     title: styles.title,
                 }}
                 className={styles.modal} opened={openedModal} onClose={handleCloseModal} title="Add book">
+                {!isBookAddingInfoFetch ?
                 <form className={styles.form}>
                     <Input.Wrapper withAsterisk error={errors.name} className={styles.input_wrap} label="Name">
                         <Input
@@ -221,9 +218,9 @@ const Books = () => {
                         />
                     </Input.Wrapper>
                     <Input.Wrapper error={errors.author} className={styles.input_wrap} label="Name Author">
-                        <MultiSelect
+                        <MultiSelect 
                             placeholder="Enter name author"
-                            data={ininFormAddingInfo.authors}
+                            data={authors}
                             limit={5}
                             value={form.author}
                             onChange={value => setField('author', value)}
@@ -276,20 +273,32 @@ const Books = () => {
                             onChange={value => setField('pages', value)}
                             min={0} className={styles.input} placeholder='Enter pages' />
                     </Input.Wrapper>
-                    <Input.Wrapper className={styles.input_wrap} label="Name genre">
-                        <Autocomplete
+                    <Input.Wrapper error={errors.genre} className={styles.input_wrap} label="Name genre">
+                        <Autocomplete 
+                         rightSection={errors.genre &&
+                            <IconExclamationCircle
+                                style={{ width: rem(20), height: rem(20) }}
+                                color="var(--mantine-color-error)"
+                            />
+                        }
                             placeholder="Enter name genre"
-                            data={ininFormAddingInfo.genres}
+                            data={genres}
                             limit={5}
                             value={form.genre}
                             onChange={value => setField('genre', value)}
                             className={styles.input}
                         />
                     </Input.Wrapper>
-                    <Input.Wrapper className={styles.input_wrap} label="Name section">
+                    <Input.Wrapper error={errors.section} className={styles.input_wrap} label="Name section">
                         <Autocomplete
+                         rightSection={errors.section &&
+                            <IconExclamationCircle
+                                style={{ width: rem(20), height: rem(20) }}
+                                color="var(--mantine-color-error)"
+                            />
+                        }
                             placeholder="Enter name section"
-                            data={ininFormAddingInfo.sections}
+                            data={sections}
                             limit={5}
                             value={form.section}
                             onChange={value => setField('section', value)}
@@ -372,6 +381,12 @@ const Books = () => {
                         variant="filled">Add
                     </Button>
                 </form>
+                 :
+                 <Loader
+                     classNames={{
+                         root: styles.loader,
+                     }} color="blue" />
+             }
             </Modal>
             <div className={styles.navigation}>
                 <div className={styles.search}>
@@ -406,7 +421,7 @@ const Books = () => {
                 <Button rightSection={
                     <IconSquareRoundedPlus size="1rem"
                     />
-                } onClick={open} variant="light">Add Book</Button>
+                } onClick={handleOpenModal} variant="light">Add Book</Button>
             </div>
             {!booksNotFound ?
                 !isBooksFetch ?

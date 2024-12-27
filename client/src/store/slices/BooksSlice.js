@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { accountApi } from "../../api/api.js"
-import { notifications } from '@mantine/notifications';
 import handleError from "./error/error.js"
 
 const initialState = {
     books: {
         books: [],
-        limit: 1,
+        limit: 12,
         count: 0,
         connection: {
             isBooksFetch: true,
@@ -101,6 +100,7 @@ export const apiGetBooks = createAsyncThunk(
         try {
             const res = await accountApi.GetBooks(JSON.stringify(data))
 
+            console.log(res.data)
             return res.data
         } catch (err) {
             handleError(dispatch, err)

@@ -29,17 +29,17 @@ func GetBooks(c *gin.Context) {
 
 	if data["filter"].(string) != "" && data["filter"].(string) != "All" {
 		if data["search"].(string) != "" {
-				query += "AND Status = "
-			} else {
-				query += "WHERE Status = "
-			}
-			switch data["filter"].(string) {
-			case "Available":
-				query += "'available' "
-			case "Loaned":
-				query += "'loaned' "
-			case "Absent":
-				query += "'absent' "
+			query += "AND Status = "
+		} else {
+			query += "WHERE Status = "
+		}
+		switch data["filter"].(string) {
+		case "Available":
+			query += "'available' "
+		case "Loaned":
+			query += "'loaned' "
+		case "Absent":
+			query += "'absent' "
 		}
 	}
 
@@ -72,10 +72,10 @@ func GetBooks(c *gin.Context) {
 	defer queryBooks.Close()
 
 	type Book struct {
-		ID     int    `json:"ID_Book"`
-		Name   string `json:"Name"`
-		Image  string `json:"Image"`
-		Status string `json:"Status"`
+		ID     int            `json:"ID_Book"`
+		Name   string         `json:"Name"`
+		Image  *string 		  `json:"Image"`
+		Status string         `json:"Status"`
 	}
 
 	books := []Book{}
@@ -154,12 +154,11 @@ func GetBookAddingInfo(c *gin.Context) {
 		sections = append(sections, section)
 	}
 
-
 	c.JSON(200, gin.H{
 		"status": "success",
 		"data": gin.H{
-			"genres": genres,
-			"authors": authors,
+			"genres":   genres,
+			"authors":  authors,
 			"sections": sections,
 		},
 	})
@@ -172,13 +171,13 @@ func AddBook(c *gin.Context) {
 		Name         string    `json:"name"`
 		YearPublish  time.Time `json:"year_publish"`
 		DateReceipt  time.Time `json:"date_receipt"`
-		Authors       []string  `json:"author"`
+		Authors      []string  `json:"author"`
 		Image        string    `json:"image"`
 		HousePublish string    `json:"house_publish"`
-		Pages        int64       `json:"pages"`
+		Pages        int64     `json:"pages"`
 		Genre        string    `json:"genre"`
 		Section      string    `json:"section"`
-		Grade        int64       `json:"grade"`
+		Grade        int64     `json:"grade"`
 		Comment      string    `json:"comment"`
 		Description  string    `json:"description"`
 		Source       string    `json:"source"`
@@ -194,25 +193,25 @@ func AddBook(c *gin.Context) {
 	var yearPublish interface{}
 	if NullTime(b.YearPublish).Valid {
 		yearPublish = NullTime(b.YearPublish).Time.Year()
-	} else { 
+	} else {
 		yearPublish = NullTime(b.YearPublish)
 	}
 
-	queryAddBook, err := db.Exec("INSERT INTO book (Name, Image, Year_Publish, House_Publish, Pages, Source, Date_Receipt, Number_Grade, Comment, Date_Last_Status_Change, Name_Genre, Status, Description, Name_Section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-	b.Name, 
-	NullString(b.Image), 
-	yearPublish, 
-	NullString(b.HousePublish), 
-	NullInt(b.Pages), 
-	NullString(b.Source), 
-	NullTime(b.DateReceipt), 
-	NullInt(b.Grade), 
-	NullString(b.Comment), 
-	time.Now().UTC(), 
-	NullString(b.Genre), 
-	"available", 
-	NullString(b.Description), 
-	NullString(b.Section),
+	queryAddBook, err := db.Exec("INSERT INTO book (Name, Image, Year_Publish, House_Publish, Pages, Source, Date_Receipt, Number_Grade, Comment, Date_Last_Status_Change, Name_Genre, Status, Description, Name_Section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		b.Name,
+		NullString(b.Image),
+		yearPublish,
+		NullString(b.HousePublish),
+		NullInt(b.Pages),
+		NullString(b.Source),
+		NullTime(b.DateReceipt),
+		NullInt(b.Grade),
+		NullString(b.Comment),
+		time.Now().UTC(),
+		NullString(b.Genre),
+		"available",
+		NullString(b.Description),
+		NullString(b.Section),
 	)
 
 	if err != nil {
@@ -252,7 +251,7 @@ func GetGenres(c *gin.Context) {
 		genres = append(genres, genre)
 	}
 
-	if len(genres) == 0 {	
+	if len(genres) == 0 {
 		c.JSON(200, gin.H{"status": "no_genres"})
 		return
 	}
@@ -285,7 +284,7 @@ func GetAuthors(c *gin.Context) {
 		authors = append(authors, author)
 	}
 
-	if len(authors) == 0 {	
+	if len(authors) == 0 {
 		c.JSON(200, gin.H{"status": "no_authors"})
 		return
 	}
