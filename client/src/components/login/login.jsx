@@ -93,8 +93,6 @@ const useLocalState = () => {
            const actionRes = await dispatchApiLogin(form)
            const promiseRes = unwrapResult(actionRes) 
 
-           console.log(promiseRes)
-
             switch (promiseRes.status) { 
                 case "incorrect_name": 
                     setErrors({name: 'Incorrect name'})

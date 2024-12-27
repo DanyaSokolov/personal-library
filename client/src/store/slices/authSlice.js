@@ -102,8 +102,6 @@ export const apiIsUser = createAsyncThunk(
         try {
             const res = await accountApi.IsUser()
 
-            console.log(res.data)
-
             return res.data 
         } catch (err) {
             handleError(dispatch, err)

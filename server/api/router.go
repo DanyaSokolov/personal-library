@@ -30,7 +30,14 @@ func Router(router *gin.Engine) *gin.Engine {
 		account := api.Group("/account").Use(m.IsUser())
 		{
 			account.GET("/user", r.GetUser)
+			
 			account.POST("/books/get", r.GetBooks)
+			account.GET("/books/get/adding-info", r.GetBookAddingInfo)
+			account.POST("/books/add", r.AddBook)
+
+			account.GET("/authors/get", r.GetAuthors)
+			account.GET("/genres/get", r.GetGenres)
+			account.GET("/library-sections/get", r.GetLibrarySections)
 		}
  
 		auth := api.Group("/auth")

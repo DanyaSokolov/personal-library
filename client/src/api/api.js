@@ -7,8 +7,8 @@ const instance = axios.create({
 
 export var authApi = { 
 
-    Login(dataJson) {
-        return instance.post("auth/login", dataJson)
+    Login(dataJSON) {
+        return instance.post("auth/login", dataJSON)
     },
 
     Logout() {
@@ -23,7 +23,27 @@ export var accountApi = {
         return instance.get("account/user")
     }, 
 
-    GetBooks(dataJson) {
-        return instance.post("account/books/get", dataJson)
+    GetBooks(dataJSON) {
+        return instance.post("account/books/get", dataJSON)
+    }, 
+
+    GetBookAddingInfo() {
+        return instance.get("account/books/get/adding-info")
+    }, 
+
+    AddBook(dataJSON) {
+        return instance.post("account/books/add", dataJSON)
+    }, 
+
+    GetAuthors() {
+        return instance.get("account/authors/get")
+    }, 
+
+    GetGenres() {
+        return instance.get("account/authors/get")
+    }, 
+
+    GetLibrarySections() {
+        return instance.get("account/library-sections/get")
     }, 
 }
