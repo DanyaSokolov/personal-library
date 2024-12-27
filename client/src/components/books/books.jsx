@@ -2,29 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux"
 import { apiGetBooks, apiGetBookAddingInfo, apiAddBook } from '../../store/slices/BooksSlice';
 import useAuthRedirect from '../../middleware/isAuth.jsx';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 import {
     Input, Button, CloseButton, Select, Card, Image, Text, AspectRatio, Paper, Pagination, Loader, Modal, Group,
-    Collapse, Box, NumberInput, rem, Autocomplete, MultiSelect, ScrollArea 
+    Collapse, Box, NumberInput, rem, Autocomplete, MultiSelect, ScrollArea
 } from '@mantine/core';
 import styles from './books.module.scss';
 import { IconSearch, IconFilterFilled, IconSquareRoundedPlus, IconCaretRightFilled, IconExclamationCircle } from '@tabler/icons-react';
 import ImageOff from '/image_off.png'
 import { useDisclosure } from '@mantine/hooks';
 import { DatePickerInput, DatesProvider, YearPickerInput } from '@mantine/dates';
+import { notifications } from '@mantine/notifications';
 
 const useLocalState = () => {
 
-    const { isAuthDispatch } = useAuthRedirect() 
+    const { isAuthDispatch } = useAuthRedirect()
 
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState('Available');
+
+    var [ininFormAddingInfo, setIninFormAddingInfo] = useState({})
 
     const {
         books: {
             books, count, limit, booksNotFound,
             add_info: { authors, genres, sections },
-            connection: { isBooksFetch }
+            connection: { isBooksFetch, isAddingFetch }
         }
     } = useSelector((state) => state.books);
 
@@ -126,12 +130,23 @@ const useLocalState = () => {
     }
 
     const dispatchApiAddBook = async () => {
-        isAuthDispatch(apiAddBook, form)
+        return isAuthDispatch(apiAddBook, form)
     }
 
     const handleSubmit = async () => {
 
         const formErrors = validateForm()
+
+        for (var v in form) {
+            if (v === 'pages' || v === 'grade') {
+                form[v] = Number(form[v])
+            }
+            if(v === 'genre') {
+                if (!(ininFormAddingInfo.genres.includes(form[v]))) {
+                    Object.assign(formErrors, {name: 'Incorrect name genre'})
+                }
+            }
+        }
 
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors)
@@ -141,43 +156,27 @@ const useLocalState = () => {
                 position: "bottom-center",
             })
         } else {
-            
-           const actionRes = await dispatchApiAddBook(form)
-        //    const promiseRes = unwrapResult(actionRes) 
+            const actionRes = await dispatchApiAddBook(form)
+            const promiseRes = unwrapResult(actionRes)
 
-        //     switch (promiseRes.status) { 
-        //         case "incorrect_name": 
-        //             setErrors({name: 'Incorrect name'})
-        //             notifications.show({
-        //                 color: "red",
-        //                 title: 'Incorrect name',
-        //                 position: "bottom-center",
-        //             })
-        //             break
-        //         case "incorrect_password": 
-        //         setErrors({password: 'Inorrect password'})
-        //             notifications.show({
-        //                 color: "red",
-        //                 title: 'Incorrect password',
-        //                 position: "bottom-center",
-        //             })
-        //             break
-        //         case "success": 
-        //             await dispatchApiIsUser()
-        //             navigate("/") 
-        //     }
-        } 
+            if (promiseRes.status === "success") {
+                notifications.show({
+                    color: "green",
+                    title: 'Book successfully added',
+                    position: "bottom-center",
+                })
+                handleCloseModal()
+            }
+        }
     }
 
     const dispatchApiGetBookAddingInfo = async () => {
         isAuthDispatch(apiGetBookAddingInfo)
     }
 
-    var [ ininFormAddingInfo, setIninFormAddingInfo] = useState({})
-
     const loadModal = async () => {
         await dispatchApiGetBookAddingInfo()
-        setIninFormAddingInfo({authors: authors, genres: genres, sections: sections})
+        setIninFormAddingInfo({ authors: authors, genres: genres, sections: sections })
     }
 
     useEffect(() => {
@@ -187,7 +186,7 @@ const useLocalState = () => {
     return {
         isBooksFetch, books, search, setSearch, filter, handleFilter, page, setPage, pagesCount, offset, limit,
         dispatchApiGetBooks, booksNotFound, openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
-        openedModal, handleCloseModal, open, ininFormAddingInfo
+        openedModal, handleCloseModal, open, ininFormAddingInfo, isAddingFetch
     }
 
 }
@@ -196,7 +195,7 @@ const Books = () => {
 
     const { isBooksFetch, books, search, setSearch, filter, handleFilter, page, setPage, pagesCount, offset, limit,
         dispatchApiGetBooks, booksNotFound, openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
-        openedModal, handleCloseModal, open, ininFormAddingInfo } = useLocalState()
+        openedModal, handleCloseModal, open, ininFormAddingInfo, isAddingFetch } = useLocalState()
 
     return (
         <div className={styles.books}>
@@ -222,15 +221,15 @@ const Books = () => {
                         />
                     </Input.Wrapper>
                     <Input.Wrapper error={errors.author} className={styles.input_wrap} label="Name Author">
-                    <MultiSelect
-                       placeholder="Enter name author"
-                       data={ininFormAddingInfo.authors}
-                       limit={5}
-                       value={form.author}
-                       onChange={value => setField('author', value)}
-                       className={styles.input}
-                        searchable
-                    />
+                        <MultiSelect
+                            placeholder="Enter name author"
+                            data={ininFormAddingInfo.authors}
+                            limit={5}
+                            value={form.author}
+                            onChange={value => setField('author', value)}
+                            className={styles.input}
+                            searchable
+                        />
                     </Input.Wrapper>
                     <Input.Wrapper error={errors.image} className={styles.input_wrap} label="Image">
                         <Input
@@ -246,16 +245,16 @@ const Books = () => {
                             placeholder='Enter image URL' />
                     </Input.Wrapper>
                     <DatesProvider settings={{ timezone: 'UTC' }}>
-                    <YearPickerInput 
-                        allowDeselect={true}
-                        classNames={{
-                            input: styles.input_date, 
-                        }} 
-                        value={form.year_publish}
-                        onChange={value => setField('year_publish', value)}
-                        label="Year publish"
-                        placeholder="Enter year publish"
-                    />
+                        <YearPickerInput
+                            allowDeselect={true}
+                            classNames={{
+                                input: styles.input_date,
+                            }}
+                            value={form.year_publish}
+                            onChange={value => setField('year_publish', value)}
+                            label="Year publish"
+                            placeholder="Enter year publish"
+                        />
                     </DatesProvider>
                     <Input.Wrapper error={errors.house_publish} className={styles.input_wrap} label="House publish">
                         <Input
@@ -272,7 +271,7 @@ const Books = () => {
                     </Input.Wrapper>
                     <Input.Wrapper className={styles.input_wrap} label="Pages">
                         <NumberInput
-                        allowDecimal={false}
+                            allowDecimal={false}
                             value={form.pages}
                             onChange={value => setField('pages', value)}
                             min={0} className={styles.input} placeholder='Enter pages' />
@@ -300,25 +299,25 @@ const Books = () => {
 
                     <Box >
                         <Group justify="center">
-                            <Button variant='transparent' onClick={toggleCollapse}>More</Button>
+                            <Button variant='transparent' onClick={toggleCollapse}>{openedCollapse ? "Less" : "More"}</Button>
                         </Group>
 
                         <Collapse in={openedCollapse}>
-                        <DatesProvider settings={{ timezone: 'UTC' }}>
-                            <DatePickerInput
-                                classNames={{
-                                    input: styles.input_date,
-                                }}
-                                allowDeselect={true}
-                                value={form.date_receipt}
-                                onChange={value => setField('date_receipt', value)}
-                                label="Date receipt"
-                                placeholder="Enter date receipt"
-                            />
+                            <DatesProvider settings={{ timezone: 'UTC' }}>
+                                <DatePickerInput
+                                    classNames={{
+                                        input: styles.input_date,
+                                    }}
+                                    allowDeselect={true}
+                                    value={form.date_receipt}
+                                    onChange={value => setField('date_receipt', value)}
+                                    label="Date receipt"
+                                    placeholder="Enter date receipt"
+                                />
                             </DatesProvider>
                             <Input.Wrapper className={styles.input_wrap} label="Number grade">
                                 <NumberInput
-                                allowDecimal={false}
+                                    allowDecimal={false}
                                     value={form.grade}
                                     onChange={value => setField('grade', value)}
                                     min={1} max={5} className={styles.input} placeholder='Enter number grade' />
@@ -363,6 +362,7 @@ const Books = () => {
                     </Box>
 
                     <Button
+                        loading={isAddingFetch}
                         onClick={handleSubmit}
                         className={styles.btn_submit}
                         rightSection={

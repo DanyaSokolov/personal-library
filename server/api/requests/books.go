@@ -172,7 +172,7 @@ func AddBook(c *gin.Context) {
 		Name         string    `json:"name"`
 		YearPublish  time.Time `json:"year_publish"`
 		DateReceipt  time.Time `json:"date_receipt"`
-		Author       []string  `json:"author"`
+		Authors       []string  `json:"author"`
 		Image        string    `json:"image"`
 		HousePublish string    `json:"house_publish"`
 		Pages        int64       `json:"pages"`
@@ -191,9 +191,40 @@ func AddBook(c *gin.Context) {
 		e.Wrap("Can not bind data", err, c)
 	}
 
-	_, err = db.Exec("INSERT INTO book (Name, Image, Year_Publish, House_Publish, Pages, Source, Date_Receipt, Number_Grade, Comment, Date_Last_Status_Change, Name_Genre, Status, Description, Name_Section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", b.Name, NullString(b.Image), NullTime(b.YearPublish).Time.Year(), NullString(b.HousePublish), NullInt(b.Pages), NullString(b.Source), NullTime(b.DateReceipt), NullInt(b.Grade), NullString(b.Comment), time.Now().UTC(), NullString(b.Genre), "available", NullString(b.Description), NullString(b.Section))
+	var yearPublish interface{}
+	if NullTime(b.YearPublish).Valid {
+		yearPublish = NullTime(b.YearPublish).Time.Year()
+	} else { 
+		yearPublish = NullTime(b.YearPublish)
+	}
+
+	queryAddBook, err := db.Exec("INSERT INTO book (Name, Image, Year_Publish, House_Publish, Pages, Source, Date_Receipt, Number_Grade, Comment, Date_Last_Status_Change, Name_Genre, Status, Description, Name_Section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+	b.Name, 
+	NullString(b.Image), 
+	yearPublish, 
+	NullString(b.HousePublish), 
+	NullInt(b.Pages), 
+	NullString(b.Source), 
+	NullTime(b.DateReceipt), 
+	NullInt(b.Grade), 
+	NullString(b.Comment), 
+	time.Now().UTC(), 
+	NullString(b.Genre), 
+	"available", 
+	NullString(b.Description), 
+	NullString(b.Section),
+	)
+
 	if err != nil {
-		e.Wrap("Something wrong with 'execAddBook' request", err, c)
+		e.Wrap("Something wrong with 'queryAddBook' request", err, c)
+	}
+
+	ID_Book, err := queryAddBook.LastInsertId()
+
+	if len(b.Authors) != 0 {
+		for i := 0; i < len(b.Authors); i++ {
+			_, err = db.Exec("INSERT INTO Author_Book (ID_Book, Name_Author) VALUES (?, ?)", ID_Book, b.Authors[i])
+		}
 	}
 
 	c.JSON(200, gin.H{
