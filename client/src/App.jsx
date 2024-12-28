@@ -3,7 +3,7 @@ import styles from './App.module.scss'
 import { Button, Breadcrumbs, Anchor, Popover } from '@mantine/core';
 import LogoImg from "/logo.png"
 import LogoImgWhite from "/logo_white.png"
-import { IconLogin2, IconLogout } from '@tabler/icons-react';
+import { IconLogin2, IconLogout, IconUser } from '@tabler/icons-react';
 import Login from './components/login/login';
 import Books from "./components/books/books";
 import BookInfo from "./components/books/info/info";
@@ -90,7 +90,9 @@ function App() {
                 {isAuth ?
                   <Popover trapFocus position="bottom" withArrow shadow="md">
                     <Popover.Target>
-                      <Button variant="outline">{name}</Button>
+                      <Button rightSection={
+                        <IconUser size="1rem" /> 
+                    } variant="white">{name}</Button>
                     </Popover.Target>
                     <Popover.Dropdown>
                       <Button loading={isLogoutingFetch} onClick={logout} rightSection={<IconLogout />}>Log out</Button>

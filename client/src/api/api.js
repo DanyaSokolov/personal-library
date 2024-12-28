@@ -32,7 +32,17 @@ export var accountApi = {
     }, 
 
     AddBook(dataJSON) {
+        console.log(dataJSON)
         return instance.post("account/books/add", dataJSON)
+    }, 
+
+    EditBook(dataJSON) {
+        console.log(dataJSON)
+        return instance.post("account/books/get/adding-info2", dataJSON)
+    }, 
+
+    DeleteBook(dataJSON) {
+        return instance.delete("account/books/delete", {data: dataJSON})
     }, 
 
     GetBook(dataJSON) {

@@ -208,7 +208,7 @@ func AddBook(c *gin.Context) {
 	)
 
 	if err != nil {
-		e.Wrap("Something wrong with 'queryAddBook' request", err, c)
+		e.Wrap("Something wrong with 'execAddBook' request", err, c)
 	}
 
 	ID_Book, err := queryAddBook.LastInsertId()
@@ -216,6 +216,9 @@ func AddBook(c *gin.Context) {
 	if len(b.Authors) != 0 {
 		for i := 0; i < len(b.Authors); i++ {
 			_, err = db.Exec("INSERT INTO Author_Book (ID_Book, Name_Author) VALUES (?, ?)", ID_Book, b.Authors[i])
+			if err != nil {
+				e.Wrap("Something wrong with 'ecexInsertAuthors' request", err, c) 
+			}
 		}
 	}
 
@@ -299,6 +302,88 @@ func GetBookInfo(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"status": "success",
 		"data":   b,
+	})
+}
+
+func EditBook(c *gin.Context) {
+
+	type Book struct {
+		ID_Book	 int64    `json:"ID_Book"`
+		Name         string    `json:"name"`
+		YearPublish  time.Time `json:"year_publish"`
+		DateReceipt  time.Time `json:"date_receipt"`
+		Authors      []string  `json:"author"`
+		Image        string    `json:"image"`
+		HousePublish string    `json:"house_publish"`
+		Pages        int64     `json:"pages"`
+		Genre        string    `json:"genre"`
+		Section      string    `json:"section"`
+		Grade        int64     `json:"grade"`
+		Comment      string    `json:"comment"`
+		Description  string    `json:"description"`
+		Source       string    `json:"source"`
+	}
+
+	var b Book
+
+	err := c.BindJSON(&b)
+	if err != nil {
+		e.Wrap("Can not bind data", err, c)
+	}
+
+	_, err = db.Exec("UPDATE book set Name = ?, Image = ?, Year_Publish = ?, House_Publish = ?, Pages = ?, Source = ?, Date_Receipt = ?, Number_Grade = ?, Comment = ?, Name_Genre = ?, Description = ?, Name_Section = ? WHERE ID_Book = ?",
+		b.Name,
+		NullString(b.Image),
+		NullTime(b.YearPublish),
+		NullString(b.HousePublish),
+		NullInt(b.Pages),
+		NullString(b.Source),
+		NullTime(b.DateReceipt),
+		NullInt(b.Grade),
+		NullString(b.Comment),
+		NullString(b.Genre),
+		NullString(b.Description),
+		NullString(b.Section),
+		b.ID_Book,
+	)
+
+	if err != nil {
+		e.Wrap("Something wrong with 'execUpdateBook' request", err, c) 
+	}
+
+	_, err = db.Exec("DELETE FROM Author_Book WHERE ID_Book = ?", b.ID_Book)
+	if err != nil {
+		e.Wrap("Something wrong with 'ecexDeleteAuthors' request", err, c) 
+	}
+
+	if len(b.Authors) != 0 {
+		for i := 0; i < len(b.Authors); i++ {
+			_, err = db.Exec("INSERT INTO Author_Book (ID_Book, Name_Author) VALUES (?, ?)", b.ID_Book, b.Authors[i])
+			if err != nil {
+				e.Wrap("Something wrong with 'ecexInsertAuthors' request", err, c) 
+			}
+		}
+	}
+
+	c.JSON(200, gin.H{
+		"status": "success",
+	})
+}
+
+func DeleteBook(c *gin.Context) {
+
+	var data map[string]interface{}
+
+	c.BindJSON(&data)
+
+	_, err := db.Exec("DELETE FROM book WHERE ID_Book = ?", int64(data["ID_Book"].(float64)))
+
+	if err != nil {
+		e.Wrap("Something wrong with 'execDeleteBook' request", err, c)
+	}
+
+	c.JSON(200, gin.H{
+		"status": "success",
 	})
 }
 

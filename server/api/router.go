@@ -35,7 +35,9 @@ func Router(router *gin.Engine) *gin.Engine {
 			account.GET("/books/get/adding-info", r.GetBookAddingInfo)
 			account.POST("/books/add", r.AddBook)
 			account.POST("/books/info/get", r.GetBookInfo)
-
+			account.POST("/books/get/adding-info2", r.EditBook)
+			account.DELETE("/books/delete", r.DeleteBook)
+ 
 			account.GET("/authors/get", r.GetAuthors)
 			account.GET("/genres/get", r.GetGenres)
 			account.GET("/library-sections/get", r.GetLibrarySections)

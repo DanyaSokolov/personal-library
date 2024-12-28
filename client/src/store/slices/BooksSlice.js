@@ -17,7 +17,7 @@ const initialState = {
             genres: [],
             sections: []
         },
-        booksNotFound: false
+        booksNotFound: false,
     },
     info: {
         ID_Book: 0,
@@ -35,9 +35,11 @@ const initialState = {
         genre: '',
         status: '',
         description: '',
-        name_Section: '',
+        section: '',
         connection: {
+            isDeletingFetch: false,
             isBookFetch: true,
+            isEditingFetch: false,
         },
     },
     authors: {
@@ -112,6 +114,15 @@ export const booksSlice = createSlice({
             .addCase(apiAddBook.rejected, (state, _) => {
                 state.books.connection.isAddingFetch = false
             })
+            .addCase(apiDeleteBook.pending, (state, _) => {
+                state.books.connection.isDeletingFetch = false
+            })
+            .addCase(apiDeleteBook.fulfilled, (state, _) => {
+                state.books.connection.isDeletingFetch = false
+            })
+            .addCase(apiDeleteBook.rejected, (state, _) => {
+                state.books.connection.isDeletingFetch = false
+            })
             .addCase(apiGetBook.pending, (state, _) => {
                 // state.info.connection.isBookFetch = true
             })
@@ -124,11 +135,20 @@ export const booksSlice = createSlice({
              
                 // state.info.connection.isBookFetch = false
             })
+            .addCase(apiEditBook.pending, (state, _) => {
+                // state.info.connection.isEditingFetch = false
+            })
+            .addCase(apiEditBook.fulfilled, (state, _) => { 
+                // state.info.connection.isEditingFetch = false 
+            })
+            .addCase(apiEditBook.rejected, (state, _) => {
+                // state.info.connection.isEditingFetch = false
+            })
     }
 })
 
 export const apiGetBooks = createAsyncThunk(
-    "auth/apiGetBooks",
+    "books/apiGetBooks",
     async (data, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.GetBooks(JSON.stringify(data))
@@ -143,7 +163,7 @@ export const apiGetBooks = createAsyncThunk(
 )
 
 export const apiGetBookAddingInfo = createAsyncThunk(
-    "auth/apiGetAuthors",
+    "books/apiGetAuthors",
     async (_, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.GetBookAddingInfo()
@@ -157,7 +177,7 @@ export const apiGetBookAddingInfo = createAsyncThunk(
 )
 
 export const apiAddBook = createAsyncThunk(
-    "auth/apiAddBook",
+    "books/apiAddBook",
     async (data, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.AddBook(JSON.stringify(data))
@@ -170,8 +190,22 @@ export const apiAddBook = createAsyncThunk(
     }
 )
 
+export const apiDeleteBook = createAsyncThunk(
+    "books/apiDeleteBook",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.DeleteBook(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
 export const apiGetBook = createAsyncThunk(
-    "auth/apiGetBook",
+    "books/apiGetBook",
     async (data, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.GetBook(JSON.stringify(data))
@@ -186,8 +220,22 @@ export const apiGetBook = createAsyncThunk(
     }
 )
 
+export const apiEditBook = createAsyncThunk(
+    "books/apiEditBook",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.EditBook(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
 export const apiGetAuthors = createAsyncThunk(
-    "auth/apiGetAuthors",
+    "books/apiGetAuthors",
     async (_, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.GetAuthors()
@@ -201,7 +249,7 @@ export const apiGetAuthors = createAsyncThunk(
 )
 
 export const apiGetGenres = createAsyncThunk(
-    "auth/apiGetGenres",
+    "books/apiGetGenres",
     async (_, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.GetGenres()
@@ -215,7 +263,7 @@ export const apiGetGenres = createAsyncThunk(
 )
 
 export const apiGetLibrarySections = createAsyncThunk(
-    "auth/apiGetLibrarySections",
+    "books/apiGetLibrarySections",
     async (_, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.GetLibrarySections()
