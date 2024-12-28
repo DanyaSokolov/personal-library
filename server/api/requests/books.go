@@ -72,17 +72,17 @@ func GetBooks(c *gin.Context) {
 	defer queryBooks.Close()
 
 	type Book struct {
-		ID     int            `json:"ID_Book"`
-		Name   string         `json:"Name"`
-		Image  *string 		  `json:"Image"`
-		Status string         `json:"Status"`
+		ID_Book int64   `json:"ID_Book"`
+		Name    string  `json:"Name"`
+		Image   *string `json:"Image"`
+		Status  string  `json:"Status"`
 	}
 
 	books := []Book{}
 
 	for queryBooks.Next() {
 		b := Book{}
-		err := queryBooks.Scan(&b.ID, &b.Name, &b.Image, &b.Status)
+		err := queryBooks.Scan(&b.ID_Book, &b.Name, &b.Image, &b.Status)
 		if err != nil {
 			e.Wrap("Cann not scan the 'queryBooks' response", err, c)
 		}
@@ -190,17 +190,10 @@ func AddBook(c *gin.Context) {
 		e.Wrap("Can not bind data", err, c)
 	}
 
-	var yearPublish interface{}
-	if NullTime(b.YearPublish).Valid {
-		yearPublish = NullTime(b.YearPublish).Time.Year()
-	} else {
-		yearPublish = NullTime(b.YearPublish)
-	}
-
 	queryAddBook, err := db.Exec("INSERT INTO book (Name, Image, Year_Publish, House_Publish, Pages, Source, Date_Receipt, Number_Grade, Comment, Date_Last_Status_Change, Name_Genre, Status, Description, Name_Section) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		b.Name,
 		NullString(b.Image),
-		yearPublish,
+		NullTime(b.YearPublish),
 		NullString(b.HousePublish),
 		NullInt(b.Pages),
 		NullString(b.Source),
@@ -228,6 +221,84 @@ func AddBook(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"status": "success",
+	})
+}
+
+func GetBookInfo(c *gin.Context) {
+
+	var data map[string]interface{}
+
+	c.BindJSON(&data)
+
+	queryBook, err := db.Query("SELECT ID_Book, Name, Year_Publish, Date_Receipt, Status, Date_Last_Status_Change, Image, House_Publish, Pages, Name_Genre, Name_Section, Number_Grade, Comment, Description, Source from book WHERE ID_Book = ?", int64(data["ID_Book"].(float64)))
+
+	if err != nil {
+		e.Wrap("Something wrong with 'queryBook' request", err, c)
+	}
+	defer queryBook.Close()
+
+	type Book struct {
+		ID_Book          int64      `json:"ID_Book"`
+		Name             string     `json:"name"`
+		YearPublish      *time.Time `json:"year_publish"`
+		DateReceipt      *time.Time `json:"date_receipt"`
+		Authors          []string   `json:"authors"`
+		Image            *string    `json:"image"`
+		HousePublish     *string    `json:"house_publish"`
+		Pages            *int64     `json:"pages"`
+		Genre            *string    `json:"genre"`
+		Section          *string    `json:"section"`
+		Status           *string    `json:"status"`
+		LastStatusChange *time.Time `json:"last_status_change"`
+		Grade            *int64     `json:"grade"`
+		Comment          *string    `json:"comment"`
+		Description      *string    `json:"description"`
+		Source           *string    `json:"source"`
+	}
+
+	var b Book
+
+	for queryBook.Next() {
+		err := queryBook.Scan(
+			&b.ID_Book,
+			&b.Name,
+			&b.YearPublish,
+			&b.DateReceipt,
+			&b.Status,
+			&b.LastStatusChange,
+			&b.Image,
+			&b.HousePublish,
+			&b.Pages,
+			&b.Genre,
+			&b.Section,
+			&b.Grade,
+			&b.Comment,
+			&b.Description,
+			&b.Source)
+		if err != nil {
+			e.Wrap("Cann not scan the 'queryBook' response", err, c)
+		}
+	}
+
+	queryAuthors, err := db.Query("SELECT Name_Author from Author_Book WHERE ID_Book = ?", int64(data["ID_Book"].(float64)))
+
+	if err != nil {
+		e.Wrap("Something wrong with 'queryAuthors' request", err, c)
+	}
+	defer queryBook.Close()
+
+	for queryAuthors.Next() {
+		var a string
+		err := queryAuthors.Scan(&a)
+		if err != nil {
+			e.Wrap("Cann not scan the 'queryAuthors' response", err, c)
+		}
+		b.Authors = append(b.Authors, a)
+	}
+
+	c.JSON(200, gin.H{
+		"status": "success",
+		"data":   b,
 	})
 }
 

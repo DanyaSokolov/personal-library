@@ -98,7 +98,6 @@ export const apiLogout = createAsyncThunk(
 export const apiIsUser = createAsyncThunk(
     "auth/apiIsUser",
     async (_, { dispatch, rejectWithValue }) => {
-        console.log("apiIsUser")
         try {
             const res = await accountApi.IsUser()
 

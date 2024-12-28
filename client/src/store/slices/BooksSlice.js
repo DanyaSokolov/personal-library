@@ -19,6 +19,27 @@ const initialState = {
         },
         booksNotFound: false
     },
+    info: {
+        ID_Book: 0,
+        name: '',
+        authors: [],
+        image: '',
+        year_publish: 0,
+        house_publish: '',
+        pages: 0,
+        source: '',
+        date_receipt: 0,
+        grade: 0,
+        comment: '',
+        last_status_change: 0,
+        genre: '',
+        status: '',
+        description: '',
+        name_Section: '',
+        connection: {
+            isBookFetch: true,
+        },
+    },
     authors: {
         authors: [],
         limit: 1,
@@ -91,6 +112,18 @@ export const booksSlice = createSlice({
             .addCase(apiAddBook.rejected, (state, _) => {
                 state.books.connection.isAddingFetch = false
             })
+            .addCase(apiGetBook.pending, (state, _) => {
+                // state.info.connection.isBookFetch = true
+            })
+            .addCase(apiGetBook.fulfilled, (state, action) => {
+                switch (action.payload.status) {
+                    case "success":
+                        state.info = action.payload.data
+                        break
+                }
+             
+                // state.info.connection.isBookFetch = false
+            })
     }
 })
 
@@ -128,6 +161,22 @@ export const apiAddBook = createAsyncThunk(
     async (data, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.AddBook(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiGetBook = createAsyncThunk(
+    "auth/apiGetBook",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.GetBook(JSON.stringify(data))
+
+            console.log(res.data)
 
             return res.data
         } catch (err) {

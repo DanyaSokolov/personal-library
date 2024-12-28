@@ -10,7 +10,7 @@ import (
 var Connection = ConnectDB()
 
 func ConnectDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/my_library")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/my_library?parseTime=true")
 	if err != nil {
 		panic("Can not connect to db")
 	}

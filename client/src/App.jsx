@@ -6,6 +6,7 @@ import LogoImgWhite from "/logo_white.png"
 import { IconLogin2, IconLogout } from '@tabler/icons-react';
 import Login from './components/login/login';
 import Books from "./components/books/books";
+import BookInfo from "./components/books/info/info";
 
 import { apiIsUser, apiLogout, setIsAuth } from './store/slices/authSlice';
 import { useEffect } from "react";
@@ -109,6 +110,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Books />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/book" element={<BookInfo />} />
               </Routes>
             </div>
           </div>

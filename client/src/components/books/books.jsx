@@ -14,6 +14,7 @@ import ImageOff from '/image_off.png'
 import { useDisclosure } from '@mantine/hooks';
 import { DatePickerInput, DatesProvider, YearPickerInput } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
+import { Link } from 'react-router-dom';
 
 const useLocalState = () => {
 
@@ -99,6 +100,7 @@ const useLocalState = () => {
                 break;
             case 'image':
                 if (value && value.length > 200) newError.image = `Image must be less than 200 characters.`
+                if (value && !isValidUrl(value)) newError.image = `The image must be a url address.`
                 break;
             case 'year_publish':
                 if (value && value.length > 4) newError.year_publish = `Year publish must be less than 4 characters.`
@@ -119,6 +121,15 @@ const useLocalState = () => {
 
         return newError;
     }
+
+    const isValidUrl = (str) => {
+        try {
+          return !!new URL(str);
+        }
+        catch (_) {
+          return false;
+        }
+      };
 
     const validateForm = () => {
         const newErrors = {};
@@ -444,9 +455,11 @@ const Books = () => {
 
                                         <Text className={styles.name} fw={500}>{b.Name}</Text>
                                         <Button
+                                        component={Link} to={`/book?id=${b.ID_Book}`}
                                             rightSection={
                                                 <IconCaretRightFilled size="1rem" />
                                             }>
+                                                
                                             More info
                                         </Button>
                                     </Card>

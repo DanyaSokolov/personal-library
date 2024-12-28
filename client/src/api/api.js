@@ -35,6 +35,10 @@ export var accountApi = {
         return instance.post("account/books/add", dataJSON)
     }, 
 
+    GetBook(dataJSON) {
+        return instance.post("account/books/info/get", dataJSON)
+    }, 
+
     GetAuthors() {
         return instance.get("account/authors/get")
     }, 
