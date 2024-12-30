@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { apiDeleteBook, apiEditBook, apiGetBook, apiGetBookAddingInfo } from '../../../store/slices/BooksSlice';
-import { useSelector } from 'react-redux';
+import { apiDeleteBook, apiEditBook, apiGetBook, apiGetBookAddingInfo, apiSetGradeBook, apiSetStatusAbsentBook, apiSetStatusAvailableBook, setGrade } from '../../../store/slices/BooksSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAuthRedirect from '../../../middleware/isAuth';
 
 import ImageOff from '/image_off.png'
 import { Button, Divider, Image, Loader, Modal, Paper, Rating, ScrollArea, Input, MultiSelect, NumberInput, Autocomplete, Box, Collapse, Group, rem } from '@mantine/core';
 import styles from './info.module.scss';
-import { IconEdit, IconExclamationCircle, IconMinus, IconSquareRoundedPlus, IconTrash, IconUserShare } from '@tabler/icons-react';
+import { IconEdit, IconExclamationCircle, IconMinus, IconPlus, IconTrash, IconUserShare } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { DatePickerInput, DatesProvider, YearPickerInput } from '@mantine/dates';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -17,8 +17,29 @@ const useLocalState = () => {
 
     const { isAuthDispatch } = useAuthRedirect()
 
+    const dispatch = useDispatch()
+
     const dispatchApiGetBook = async () => {
         isAuthDispatch(apiGetBook, { ID_Book: searchParamsBook_ID })
+    }
+
+    const dispatchApiSetStatusAbsentBook = async () => {
+        await isAuthDispatch(apiSetStatusAbsentBook, { ID_Book: searchParamsBook_ID })
+        navigate('/')
+    }
+
+    const dispatchApiSetStatusAvailableBook = async () => {
+        await isAuthDispatch(apiSetStatusAvailableBook, { ID_Book: searchParamsBook_ID })
+        navigate('/')
+    }
+
+    const dispatchApiSetGradeBook = async (grade) => {
+        return isAuthDispatch(apiSetGradeBook, { ID_Book: searchParamsBook_ID, grade })
+    }
+
+    const handleGrade = async (grade) => {
+        await dispatchApiSetGradeBook(grade)
+        dispatch(setGrade(grade))
     }
 
     const navigate = useNavigate()
@@ -66,10 +87,10 @@ const useLocalState = () => {
     const parsedDateReceipt = date_receipt ? new Date(date_receipt).getFullYear() + "-" + ('0' + (new Date(date_receipt).getMonth() + 1)).slice(-2) + "-" + ('0' + new Date(date_receipt).getDate()).slice(-2) : "-";
     const parsedLastStatusChange = last_status_change ? new Date(last_status_change).getFullYear() + "-" + ('0' + (new Date(last_status_change).getMonth() + 1)).slice(-2) + "-" + ('0' + new Date(last_status_change).getDate()).slice(-2) : "-";
 
-      const [openedModal, { open: openModal, close: closeModal }] = useDisclosure(false)
+        const [openedModal, { open: openModal, close: closeModal }] = useDisclosure(false)
         const [openedCollapse, { close: closeCollapse, toggle: toggleCollapse }] = useDisclosure(false);
     
-        const [form, setForm] = useState({})
+        const [form, setForm] = useState({grade: grade})
         const [errors, setErrors] = useState({})
     
         const handleCloseModal = () => {
@@ -204,11 +225,8 @@ const useLocalState = () => {
             } else {
                 const actionRes = await dispatchApiEditBook(form)
                 const promiseRes = unwrapResult(actionRes)
-
-                console.log(promiseRes)
     
                 if (promiseRes.status === "success") {
-                    console.log(111)
                     notifications.show({
                         color: "green",
                         title: 'Book successfully edited',
@@ -245,7 +263,8 @@ const useLocalState = () => {
         dispatchApiDeleteBook,
         // isDeletingFetch
         openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
-        openedModal, handleCloseModal, handleOpenModal, isBookAddingInfoFetch, authorsInfo, genresInfo, sectionsInfo
+        openedModal, handleCloseModal, handleOpenModal, isBookAddingInfoFetch, authorsInfo, genresInfo, sectionsInfo,
+        dispatchApiSetStatusAbsentBook, dispatchApiSetStatusAvailableBook, handleGrade
     }
 }
 
@@ -271,17 +290,19 @@ const BookInfo = () => {
         dispatchApiDeleteBook, 
         // isDeletingFetch
         openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
-        openedModal, handleCloseModal, handleOpenModal, isBookAddingInfoFetch, authorsInfo, genresInfo, sectionsInfo
+        openedModal, handleCloseModal, handleOpenModal, isBookAddingInfoFetch, authorsInfo, genresInfo, sectionsInfo,
+        handleGrade, dispatchApiSetStatusAbsentBook, dispatchApiSetStatusAvailableBook
     } = useLocalState()
 
     return (
         <div className={styles.info}>
 <Modal
+ radius="lg"
                 scrollAreaComponent={ScrollArea.Autosize}
                 classNames={{
-                    title: styles.title,
+                    title: styles.title_form,
                 }}
-                className={styles.modal} opened={openedModal} onClose={handleCloseModal} title="Add book">
+                className={styles.modal} opened={openedModal} onClose={handleCloseModal} title="Edit book">
                 {!isBookAddingInfoFetch ?
                 <form className={styles.form}>
                     <Input.Wrapper withAsterisk error={errors.name} className={styles.input_wrap} label="Name">
@@ -455,10 +476,10 @@ const BookInfo = () => {
                         onClick={handleSubmit}
                         className={styles.btn_submit}
                         rightSection={
-                            <IconSquareRoundedPlus size="1rem"
+                            <IconEdit size="1rem"
                             />
                         }
-                        variant="filled">Add
+                        variant="filled">Edit
                     </Button>
                 </form>
                  :
@@ -471,17 +492,20 @@ const BookInfo = () => {
             <div className={styles.head}>
                 <div className={styles.title}>
                     <h2 className={styles.name}>{name}</h2>
-                    <div className={styles.status}>{status}, last change {parsedLastStatusChange}</div>
+                    <div className={styles.status}><div style={{ backgroundColor: status === 'Available' ? '#40c057' : status === 'Loaned' ? '#228be6' : '#868e96' }} className={styles.indicator}></div>{status}, last change {parsedLastStatusChange}</div>
                 </div>
                 <div className={styles.actions}>
-                    <Button rightSection={
+                    {status === 'Available' ?
+                    <>
+                        <Button rightSection={
                         <IconTrash size="1rem" />  
                     } 
                     // loading={isDeletingFetch}
                     onClick={() => dispatchApiDeleteBook()} color='red' variant='light'>Delete</Button>
                      <Button rightSection={
                         <IconMinus size="1rem" /> 
-                    }  color='grey' variant='light'>Absent</Button>
+                    } 
+                    onClick={dispatchApiSetStatusAbsentBook} color='grey' variant='light'>Absent</Button>
                     <Button rightSection={
                         <IconEdit size="1rem" />
                     }
@@ -489,17 +513,44 @@ const BookInfo = () => {
                     <Button  rightSection={
                         <IconUserShare size="1rem" />
                     } variant='outline'>Loan</Button>
+                    </>
+                    :
+                    status === 'Absent'
+                    ?
+                    <>
+                        <Button rightSection={
+                        <IconTrash size="1rem" />  
+                    } 
+                    // loading={isDeletingFetch}
+                    onClick={() => dispatchApiDeleteBook()} color='red' variant='light'>Delete</Button>
+                     <Button rightSection={
+                        <IconPlus size="1rem" /> 
+                    } 
+                    onClick={dispatchApiSetStatusAvailableBook} color='green' variant='light'>Available</Button>
+                    <Button rightSection={
+                        <IconEdit size="1rem" />
+                    }
+                    onClick={handleOpenModal} variant='light'>Edit</Button>
+                    </>
+                    :
+                    <>
+                    <Button rightSection={
+                        <IconEdit size="1rem" />
+                    }
+                    onClick={handleOpenModal} variant='light'>Edit</Button>
+                    </>
+                }
                 </div>
             </div>
             <div className={styles.content}>
                 <Paper className={styles.image_wrap} shadow="sm" withBorder radius="lg">
                     {image ?
-                        <Image className={styles.image} src={image} />
+                        <Image className={styles.image} src={image} /> 
                         :
                         <Image className={styles.image} src={ImageOff} />}
                 </Paper>
                 <Paper className={styles.main} shadow="sm" radius="lg">
-                    <div className={styles.rating}><div className={styles.title}>Grade</div><Rating fractions={2} value={grade / 2} size="lg" /></div>
+                    <div className={styles.rating}><div className={styles.title}>Grade</div><Rating fractions={2} onChange={(g) => handleGrade(g * 2)} value={grade / 2} size="lg" /></div>
                     <div className={styles.description}><div className={styles.title}>Description</div>{description ? description : "-"}</div>
                     <div className={styles.comment}><div className={styles.title}>Comment</div>{comment ? comment : "-"}</div>
                 </Paper>

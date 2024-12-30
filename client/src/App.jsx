@@ -7,11 +7,15 @@ import { IconLogin2, IconLogout, IconUser } from '@tabler/icons-react';
 import Login from './components/login/login';
 import Books from "./components/books/books";
 import BookInfo from "./components/books/info/info";
+import Genres from "./components/books/genres/genres";
 
 import { apiIsUser, apiLogout, setIsAuth } from './store/slices/authSlice';
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { notifications } from "@mantine/notifications";
+import Authors from "./components/books/authors/authors";
+import Sections from "./components/books/sections/sections";
+import Users from "./components/users/users";
 
 const useLocalState = () => {
 
@@ -113,6 +117,10 @@ function App() {
                 <Route path="/" element={<Books />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/book" element={<BookInfo />} />
+                <Route path="/genres" element={<Genres />} />
+                <Route path="/authors" element={<Authors />} />
+                <Route path="/sections" element={<Sections />} />
+                <Route path="/users" element={<Users />} />
               </Routes>
             </div>
           </div>

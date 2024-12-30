@@ -42,31 +42,40 @@ const initialState = {
             isEditingFetch: false,
         },
     },
-    authors: {
-        authors: [],
-        limit: 1,
-        count: 0,
-        connection: {
-            isAuthorsFetch: true,
-        },
-        authorsNotFound: false
-    },
     genres: {
         genres: [],
-        limit: 1,
+        limit: 12,
         count: 0,
         connection: {
             isGenresFetch: true,
+            isAddingFetch: false,
+            isDeletingFetch: false,
         },
+        deletingName: '',
         genresNotFound: false
+    },
+    authors: {
+        authors: [],
+        limit: 12,
+        count: 0,
+        connection: {
+            isAuthorsFetch: true,
+            isAddingFetch: false,
+            isDeletingFetch: false,
+        },
+        deletingName: '',
+        authorsNotFound: false
     },
     sections: {
         sections: [],
-        limit: 1,
+        limit: 12,
         count: 0,
         connection: {
             isSectionsFetch: true,
+            isAddingFetch: false,
+            isDeletingFetch: false,
         },
+        deletingName: '',
         sectionsNotFound: false
     },
 }
@@ -74,7 +83,20 @@ const initialState = {
 export const booksSlice = createSlice({
     name: "books",
     initialState,
-    reducers: {},
+    reducers: {
+        setGrade: (state, action) => {
+            state.info.grade = action.payload
+        },
+        setDeletingGenreName: (state, action) => {
+            state.genres.deletingName = action.payload
+        },
+        setDeletingAuthorName: (state, action) => {
+            state.authors.deletingName = action.payload
+        },
+        setDeletingSectionName: (state, action) => {
+            state.sections.deletingName = action.payload
+        },
+    },
     extraReducers(builder) {
         builder
             .addCase(apiGetBooks.pending, (state, _) => {
@@ -115,13 +137,13 @@ export const booksSlice = createSlice({
                 state.books.connection.isAddingFetch = false
             })
             .addCase(apiDeleteBook.pending, (state, _) => {
-                state.books.connection.isDeletingFetch = false
+                // state.books.connection.isDeletingFetch = false
             })
             .addCase(apiDeleteBook.fulfilled, (state, _) => {
-                state.books.connection.isDeletingFetch = false
+                // state.books.connection.isDeletingFetch = false
             })
             .addCase(apiDeleteBook.rejected, (state, _) => {
-                state.books.connection.isDeletingFetch = false
+                // state.books.connection.isDeletingFetch = false
             })
             .addCase(apiGetBook.pending, (state, _) => {
                 // state.info.connection.isBookFetch = true
@@ -144,6 +166,135 @@ export const booksSlice = createSlice({
             .addCase(apiEditBook.rejected, (state, _) => {
                 // state.info.connection.isEditingFetch = false
             })
+            .addCase(apiSetStatusAbsentBook.pending, (state, _) => {
+                // state.info.connection.isEditingFetch = false
+            })
+            .addCase(apiSetStatusAbsentBook.fulfilled, (state, _) => { 
+                // state.info.connection.isEditingFetch = false 
+            })
+            .addCase(apiSetStatusAbsentBook.rejected, (state, _) => {
+                // state.info.connection.isEditingFetch = false
+            })
+            .addCase(apiSetGradeBook.pending, (state, _) => {
+                // state.info.connection.isEditingFetch = false
+            })
+            .addCase(apiSetGradeBook.fulfilled, (state, _) => { 
+                // state.info.connection.isEditingFetch = false 
+            })
+            .addCase(apiSetGradeBook.rejected, (state, _) => {
+                // state.info.connection.isEditingFetch = false
+            })
+            .addCase(apiGetGenres.pending, (state, _) => { 
+                state.genres.connection.isGenresFetch = true
+                state.genres.genresNotFound = false
+            }) 
+            .addCase(apiGetGenres.fulfilled, (state, action) => { 
+                switch (action.payload.status) {
+                    case "no_genres":
+                        state.genres.genresNotFound = true
+                        break
+                    case "success": 
+                        state.genres.genres = action.payload.data.genres
+                        state.genres.count = action.payload.data.count
+                        break
+                }
+                state.genres.connection.isGenresFetch = false 
+            })
+            .addCase(apiGetGenres.rejected, (state, _) => {
+                state.genres.connection.isGenresFetch = false
+            })
+            .addCase(apiAddGenre.pending, (state, _) => {
+                state.genres.connection.isAddingFetch = true
+            })
+            .addCase(apiAddGenre.fulfilled, (state, _) => { 
+                state.genres.connection.isAddingFetch = false 
+            })
+            .addCase(apiAddGenre.rejected, (state, _) => {
+                state.genres.connection.isAddingFetch = false
+            })
+            .addCase(apiDeleteGenre.pending, (state, _) => {
+                state.genres.connection.isDeletingFetch = true
+            })
+            .addCase(apiDeleteGenre.fulfilled, (state, _) => { 
+                state.genres.connection.isDeletingFetch = false 
+            })
+            .addCase(apiDeleteGenre.rejected, (state, _) => {
+                state.genres.connection.isDeletingFetch = false
+            })
+            .addCase(apiGetAuthors.pending, (state, _) => { 
+                state.authors.connection.isAuthorsFetch = true
+                state.authors.authorsNotFound = false
+            }) 
+            .addCase(apiGetAuthors.fulfilled, (state, action) => { 
+                switch (action.payload.status) {
+                    case "no_authors":
+                        state.authors.authorsNotFound = true
+                        break
+                    case "success": 
+                        state.authors.authors = action.payload.data.authors
+                        state.authors.count = action.payload.data.count
+                        break
+                }
+                state.authors.connection.isAuthorsFetch = false 
+            })
+            .addCase(apiGetAuthors.rejected, (state, _) => {
+                state.authors.connection.isAuthorsFetch = false
+            })
+            .addCase(apiAddAuthor.pending, (state, _) => {
+                state.authors.connection.isAddingFetch = true
+            })
+            .addCase(apiAddAuthor.fulfilled, (state, _) => { 
+                state.authors.connection.isAddingFetch = false 
+            }) 
+            .addCase(apiAddAuthor.rejected, (state, _) => {
+                state.authors.connection.isAddingFetch = false
+            })
+            .addCase(apiDeleteAuthor.pending, (state, _) => {
+                state.authors.connection.isDeletingFetch = true
+            })
+            .addCase(apiDeleteAuthor.fulfilled, (state, _) => { 
+                state.authors.connection.isDeletingFetch = false 
+            })
+            .addCase(apiDeleteAuthor.rejected, (state, _) => {
+                state.authors.connection.isDeletingFetch = false
+            })
+            .addCase(apiGetSections.pending, (state, _) => { 
+                state.sections.connection.isSectionsFetch = true
+                state.sections.sectionsNotFound = false
+            }) 
+            .addCase(apiGetSections.fulfilled, (state, action) => { 
+                switch (action.payload.status) {
+                    case "no_sections":
+                        state.sections.sectionsNotFound = true
+                        break
+                    case "success": 
+                        state.sections.sections = action.payload.data.sections
+                        state.sections.count = action.payload.data.count
+                        break
+                }
+                state.sections.connection.isSectionsFetch = false 
+            })
+            .addCase(apiGetSections.rejected, (state, _) => {
+                state.sections.connection.isSectionsFetch = false
+            })
+            .addCase(apiAddSection.pending, (state, _) => {
+                state.sections.connection.isAddingFetch = true
+            })
+            .addCase(apiAddSection.fulfilled, (state, _) => { 
+                state.sections.connection.isAddingFetch = false 
+            }) 
+            .addCase(apiAddSection.rejected, (state, _) => {
+                state.sections.connection.isAddingFetch = false
+            })
+            .addCase(apiDeleteSection.pending, (state, _) => {
+                state.sections.connection.isDeletingFetch = true
+            })
+            .addCase(apiDeleteSection.fulfilled, (state, _) => { 
+                state.sections.connection.isDeletingFetch = false 
+            })
+            .addCase(apiDeleteSection.rejected, (state, _) => {
+                state.sections.connection.isDeletingFetch = false
+            })
     }
 })
 
@@ -153,7 +304,6 @@ export const apiGetBooks = createAsyncThunk(
         try {
             const res = await accountApi.GetBooks(JSON.stringify(data))
 
-            console.log(res.data)
             return res.data
         } catch (err) {
             handleError(dispatch, err)
@@ -163,7 +313,7 @@ export const apiGetBooks = createAsyncThunk(
 )
 
 export const apiGetBookAddingInfo = createAsyncThunk(
-    "books/apiGetAuthors",
+    "books/apiGetBookAddingInfo",
     async (_, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.GetBookAddingInfo()
@@ -210,8 +360,6 @@ export const apiGetBook = createAsyncThunk(
         try {
             const res = await accountApi.GetBook(JSON.stringify(data))
 
-            console.log(res.data)
-
             return res.data
         } catch (err) {
             handleError(dispatch, err)
@@ -234,11 +382,39 @@ export const apiEditBook = createAsyncThunk(
     }
 )
 
-export const apiGetAuthors = createAsyncThunk(
-    "books/apiGetAuthors",
-    async (_, { dispatch, rejectWithValue }) => {
+export const apiSetStatusAbsentBook = createAsyncThunk(
+    "books/apiSetStatusAbsentBook",
+    async (data, { dispatch, rejectWithValue }) => {
         try {
-            const res = await accountApi.GetAuthors()
+            const res = await accountApi.SetStatusAbsentBook(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiSetStatusAvailableBook = createAsyncThunk(
+    "books/apiSetStatusAvailableBook",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.SetStatusAvailableBook(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiSetGradeBook = createAsyncThunk(
+    "books/apiSetGradeBook",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.SetGradeBook(JSON.stringify(data))
 
             return res.data
         } catch (err) {
@@ -250,9 +426,9 @@ export const apiGetAuthors = createAsyncThunk(
 
 export const apiGetGenres = createAsyncThunk(
     "books/apiGetGenres",
-    async (_, { dispatch, rejectWithValue }) => {
+    async (data, { dispatch, rejectWithValue }) => {
         try {
-            const res = await accountApi.GetGenres()
+            const res = await accountApi.GetGenres(JSON.stringify(data))
 
             return res.data
         } catch (err) {
@@ -262,11 +438,11 @@ export const apiGetGenres = createAsyncThunk(
     }
 )
 
-export const apiGetLibrarySections = createAsyncThunk(
-    "books/apiGetLibrarySections",
-    async (_, { dispatch, rejectWithValue }) => {
+export const apiAddGenre = createAsyncThunk(
+    "books/apiAddGenre",
+    async (data, { dispatch, rejectWithValue }) => {
         try {
-            const res = await accountApi.GetLibrarySections()
+            const res = await accountApi.AddGenre(JSON.stringify(data))
 
             return res.data
         } catch (err) {
@@ -276,4 +452,107 @@ export const apiGetLibrarySections = createAsyncThunk(
     }
 )
 
+export const apiDeleteGenre = createAsyncThunk(
+    "books/apiDeleteGenre",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.DeleteGenre(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiGetAuthors = createAsyncThunk(
+    "books/apiGetAuthors",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.GetAuthors(JSON.stringify(data))
+ 
+            console.log(res.data)
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiAddAuthor = createAsyncThunk(
+    "books/apiAddAuthor",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.AddAuthor(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiDeleteAuthor = createAsyncThunk(
+    "books/apiDeleteAuthor",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.DeleteAuthor(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiGetSections = createAsyncThunk(
+    "books/apiGetSections",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.GetSections(JSON.stringify(data))
+ 
+            console.log(res.data)
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiAddSection = createAsyncThunk(
+    "books/apiAddSection",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.AddSection(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const apiDeleteSection = createAsyncThunk(
+    "books/apiDeleteSection",
+    async (data, { dispatch, rejectWithValue }) => {
+        try {
+            const res = await accountApi.DeleteSection(JSON.stringify(data))
+
+            return res.data
+        } catch (err) {
+            handleError(dispatch, err)
+            return rejectWithValue(err.message)
+        }
+    }
+)
+
+export const { setGrade, setDeletingGenreName, setDeletingAuthorName, setDeletingSectionName } = booksSlice.actions
 export default booksSlice.reducer

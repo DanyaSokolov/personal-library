@@ -35,12 +35,27 @@ func Router(router *gin.Engine) *gin.Engine {
 			account.GET("/books/get/adding-info", r.GetBookAddingInfo)
 			account.POST("/books/add", r.AddBook)
 			account.POST("/books/info/get", r.GetBookInfo)
-			account.POST("/books/get/adding-info2", r.EditBook)
+			account.POST("/books/edit", r.EditBook)
+			account.POST("/books/status/absent", r.SetStatusAbsentBook)
+			account.POST("/books/status/available", r.SetStatusAvailableBook)
+			account.POST("/books/grade", r.SetGradeBook)
 			account.DELETE("/books/delete", r.DeleteBook)
+
+			account.POST("/genres/get", r.GetGenres)
+			account.POST("/genres/add", r.AddGenre)
+			account.DELETE("/genres/delete", r.DeleteGenre)
  
-			account.GET("/authors/get", r.GetAuthors)
-			account.GET("/genres/get", r.GetGenres)
-			account.GET("/library-sections/get", r.GetLibrarySections)
+			account.POST("/authors/get", r.GetAuthors)
+			account.POST("/authors/add", r.AddAuthor)
+			account.DELETE("/authors/delete", r.DeleteAuhtor)
+
+			account.POST("/sections/get", r.GetSections)
+			account.POST("/sections/add", r.AddSection)
+			account.DELETE("/sections/delete", r.DeleteSection)
+
+			account.POST("/users/get", r.GetUsers)
+			account.POST("/users/add", r.AddUser)
+			account.DELETE("/users/delete", r.DeleteUser)
 		}
  
 		auth := api.Group("/auth")

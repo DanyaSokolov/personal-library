@@ -29,7 +29,7 @@
             position: relative;
             display: block;
 
-            .my_indicator {
+            .indicator {
                 position: absolute;
                 width: 1rem;
                 height: 1rem;
@@ -41,7 +41,7 @@
                 border-radius: 1rem;
             }
 
-            .my_indicator::before {
+            .indicator::before {
                 content: '';
                 inset: 0;
                 transform: scale(1);

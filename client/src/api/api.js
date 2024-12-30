@@ -32,13 +32,23 @@ export var accountApi = {
     }, 
 
     AddBook(dataJSON) {
-        console.log(dataJSON)
         return instance.post("account/books/add", dataJSON)
     }, 
 
     EditBook(dataJSON) {
-        console.log(dataJSON)
-        return instance.post("account/books/get/adding-info2", dataJSON)
+        return instance.post("account/books/edit", dataJSON)
+    }, 
+
+    SetStatusAbsentBook(dataJSON) {
+        return instance.post("account/books/status/absent", dataJSON)
+    }, 
+
+    SetStatusAvailableBook(dataJSON) {
+        return instance.post("account/books/status/available", dataJSON)
+    }, 
+
+    SetGradeBook(dataJSON) {
+        return instance.post("account/books/grade", dataJSON)
     }, 
 
     DeleteBook(dataJSON) {
@@ -49,15 +59,51 @@ export var accountApi = {
         return instance.post("account/books/info/get", dataJSON)
     }, 
 
-    GetAuthors() {
-        return instance.get("account/authors/get")
+    GetGenres(dataJSON) {
+        return instance.post("account/genres/get", dataJSON) 
     }, 
 
-    GetGenres() {
-        return instance.get("account/authors/get")
+    AddGenre(dataJSON) {
+        return instance.post("account/genres/add", dataJSON)
     }, 
 
-    GetLibrarySections() {
-        return instance.get("account/library-sections/get")
+    DeleteGenre(dataJSON) {
+        return instance.delete("account/genres/delete", {data: dataJSON})
+    }, 
+
+    GetAuthors(dataJSON) {
+        return instance.post("account/authors/get", dataJSON) 
+    }, 
+
+    AddAuthor(dataJSON) {
+        return instance.post("account/authors/add", dataJSON)
+    }, 
+
+    DeleteAuthor(dataJSON) {
+        return instance.delete("account/authors/delete", {data: dataJSON})
+    }, 
+
+    GetSections(dataJSON) {
+        return instance.post("account/sections/get", dataJSON) 
+    }, 
+
+    AddSection(dataJSON) {
+        return instance.post("account/sections/add", dataJSON) 
+    }, 
+
+    DeleteSection(dataJSON) {
+        return instance.delete("account/sections/delete", {data: dataJSON})
+    }, 
+
+    GetUsers(dataJSON) {
+        return instance.post("account/users/get", dataJSON) 
+    }, 
+
+    AddUser(dataJSON) {
+        return instance.post("account/users/add", dataJSON) 
+    }, 
+
+    DeleteUser(dataJSON) {
+        return instance.delete("account/users/delete", {data: dataJSON})
     }, 
 }
