@@ -56,6 +56,10 @@ func Router(router *gin.Engine) *gin.Engine {
 			account.POST("/users/get", r.GetUsers)
 			account.POST("/users/add", r.AddUser)
 			account.DELETE("/users/delete", r.DeleteUser)
+
+			account.GET("/loans/get/adding-info", r.GetLoanAddingInfo)
+			account.POST("/loans/create", r.CreateLoan)
+			account.POST("/loans/get", r.GetLoans)
 		}
  
 		auth := api.Group("/auth")

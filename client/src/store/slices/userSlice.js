@@ -68,7 +68,7 @@ export const usersSlice = createSlice({
 })
 
 export const apiGetUsers = createAsyncThunk(
-    "books/apiGetUsers",
+    "users/apiGetUsers",
     async (data, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.GetUsers(JSON.stringify(data))
@@ -82,7 +82,7 @@ export const apiGetUsers = createAsyncThunk(
 )
 
 export const apiAddUser = createAsyncThunk(
-    "books/apiAddUser",
+    "users/apiAddUser",
     async (data, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.AddUser(JSON.stringify(data))
@@ -96,7 +96,7 @@ export const apiAddUser = createAsyncThunk(
 )
 
 export const apiDeleteUser = createAsyncThunk(
-    "books/apiDeleteUser",
+    "users/apiDeleteUser",
     async (data, { dispatch, rejectWithValue }) => {
         try {
             const res = await accountApi.DeleteUser(JSON.stringify(data))

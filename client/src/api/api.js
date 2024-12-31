@@ -106,4 +106,12 @@ export var accountApi = {
     DeleteUser(dataJSON) {
         return instance.delete("account/users/delete", {data: dataJSON})
     }, 
+
+    GetLoanAddingInfo() {
+        return instance.get("account/loans/get/adding-info")
+    }, 
+
+    CreateLoan(dataJSON) {
+        return instance.post("account/loans/create", dataJSON)
+    }, 
 }

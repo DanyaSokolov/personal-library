@@ -6,14 +6,13 @@ import { unwrapResult } from '@reduxjs/toolkit';
 
 import {
     Input, Button, CloseButton, Pagination, Loader, Modal, ScrollArea, ActionIcon,
-    TagsInput,
     rem,
     Paper,
     Avatar,
     Fieldset
 } from '@mantine/core';
 import styles from './users.module.scss';
-import { IconSearch, IconSquareRoundedPlus, IconExclamationCircle, IconTrash, IconCaretRight, IconCaretRightFilled } from '@tabler/icons-react';
+import { IconSearch, IconSquareRoundedPlus, IconExclamationCircle, IconTrash, IconCaretRightFilled } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 
