@@ -219,7 +219,7 @@ const Genres = () => {
                             <Paper
                                 classNames={{
                                     root: styles.card,
-                                }} key={i} shadow="sm" radius="md" withBorder p="xl">
+                                }} key={i} shadow="xs" radius="md" withBorder p="xl">
                                 <div className={styles.cell}>
                                     {g}
                                 </div>

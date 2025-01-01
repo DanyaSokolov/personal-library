@@ -60,12 +60,14 @@ func Router(router *gin.Engine) *gin.Engine {
 			account.GET("/loans/get/adding-info", r.GetLoanAddingInfo)
 			account.POST("/loans/create", r.CreateLoan)
 			account.POST("/loans/get", r.GetLoans)
+			account.POST("/loans/get-info", r.GetLoanInfo) 
+			account.POST("/loans/returned", r.ReturnedLoan)
 		}
  
 		auth := api.Group("/auth")
 		{
 			auth.POST("/login", r.Login)
-			auth.GET("/logout", r.Logout)
+			auth.GET("/logout", r.Logout) 
 		}
 	}
 

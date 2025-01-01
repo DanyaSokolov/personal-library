@@ -17,7 +17,7 @@ const useAuthRedirect = () => {
         if (action.fulfilled.match(resultAction)) {
             const responseData = unwrapResult(resultAction)
  
-            if(responseData.status == "not_authorized") {
+            if(responseData.status == "not_authorized") { 
                 dispatch(setIsAuth(false))
                 notifications.show({
                     title: 'Not authorized',

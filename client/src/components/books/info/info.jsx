@@ -63,7 +63,7 @@ const useLocalState = () => {
             ID_Book,
             name,
             authors,
-            image,
+            image, 
             year_publish,
             house_publish,
             pages,

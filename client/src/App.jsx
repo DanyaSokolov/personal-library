@@ -16,6 +16,7 @@ import { notifications } from "@mantine/notifications";
 import Authors from "./components/books/authors/authors";
 import Sections from "./components/books/sections/sections";
 import Users from "./components/users/users";
+import Loans from "./components/loans/loans.";
 
 const useLocalState = () => {
 
@@ -89,6 +90,7 @@ function App() {
                 <div className={styles.navlinks_left}>
                   <Button component={Link} to="/" variant="subtle" color="black">Books</Button>
                   <Button component={Link} to="/loans" variant="subtle" color="black">Loans</Button>
+                  <Button component={Link} to="/users" variant="subtle" color="black">Users</Button>
                   <Button component={Link} to="/statistics" variant="subtle" color="black">Statistics</Button>
                 </div>
                 {isAuth ?
@@ -121,6 +123,7 @@ function App() {
                 <Route path="/authors" element={<Authors />} />
                 <Route path="/sections" element={<Sections />} />
                 <Route path="/users" element={<Users />} />
+                <Route path="/loans" element={<Loans />} />
               </Routes>
             </div>
           </div>
@@ -135,6 +138,11 @@ function App() {
                   classNames={{
                     root: styles.navlink_footer,
                   }} component={Link} to="/loans" variant="subtle" color="white">Loans
+                </Button>
+                <Button
+                  classNames={{
+                    root: styles.navlink_footer,
+                  }} component={Link} to="/users" variant="subtle" color="white">Users
                 </Button>
                 <Button
                   classNames={{

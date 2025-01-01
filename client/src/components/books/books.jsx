@@ -21,8 +21,8 @@ const useLocalState = () => {
 
     const { isAuthDispatch } = useAuthRedirect()
 
-    const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState('Available');
+    const [search, setSearch] = useState(''); 
+    const [filter, setFilter] = useState('All');
 
     const {
         books: {
@@ -442,8 +442,8 @@ const Books = () => {
                                 <IconDots size="1rem"
                                 />
                             }
-                            variant="default">Manage</Button>
-                    </Menu.Target>
+                            variant="default">More</Button>
+                    </Menu.Target> 
 
                     <Menu.Dropdown>
                         <Menu.Item

@@ -256,15 +256,18 @@ const Users = () => {
                     title: styles.title,
                 }}
                 className={styles.modal} opened={openedNetworkModal} onClose={handleCloseNetworkModal} title="Social networks">
-                {networks?.map((n) =>
-                    <Paper
-                        classNames={{
-                            root: styles.network,
-                        }} key={n.Name_Social_Network} radius="md" p="xs">
-                        <div>{n.Name_Social_Network} </div>
-                        <div>{n.Username}</div>
-                    </Paper>
-                )}
+                 {networks.length != 0 ?
+                         networks?.map((n) =>
+                            <Paper
+                                classNames={{
+                                    root: styles.network,
+                                }} key={n.Name_Social_Network} radius="md" p="xs">
+                                <div>{n.Name_Social_Network} </div>
+                                <div>{n.Username}</div>
+                            </Paper>
+                        ) 
+                    :
+                    <div>-</div>}
             </Modal>
             <Modal
                 radius="lg"
@@ -435,10 +438,10 @@ const Users = () => {
                                     {s.Phone ? s.Phone : "-"}
                                 </div>
                                 <div className={styles.cell}>
-                                    <Button rightSection={
+                                    <Button rightSection={ 
                                         <IconCaretRightFilled size="1rem"
                                         />
-                                    } onClick={() => handleOpenNetworkModal(s.Networks)} variant="default">Social networks</Button>
+                                    } onClick={() => handleOpenNetworkModal(s.Networks)} variant="transparent">Social networks</Button>
                                 </div>
                                 <ActionIcon loading={deletingID === s.ID_User ? isDeletingFetch : false} onClick={() => dispatchApiDeleteUser(s.ID_User)} variant="light" color="red">
                                     <IconTrash style={{ width: '70%', height: '70%' }} stroke={1.5} />

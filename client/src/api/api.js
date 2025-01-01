@@ -114,4 +114,17 @@ export var accountApi = {
     CreateLoan(dataJSON) {
         return instance.post("account/loans/create", dataJSON)
     }, 
+
+    GetLoans(dataJSON) {
+        return instance.post("account/loans/get", dataJSON)
+    }, 
+
+    
+    GetLoanInfo(dataJSON) {
+        return instance.post("account/loans/get-info", dataJSON)
+    }, 
+
+    ReturnedLoan(dataJSON) {
+        return instance.post("account/loans/returned", dataJSON)
+    },  
 }
