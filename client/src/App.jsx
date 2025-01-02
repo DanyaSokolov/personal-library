@@ -17,6 +17,7 @@ import Authors from "./components/books/authors/authors";
 import Sections from "./components/books/sections/sections";
 import Users from "./components/users/users";
 import Loans from "./components/loans/loans.";
+import Statistics from "./components/statistics/statistics";
 
 const useLocalState = () => {
 
@@ -124,6 +125,7 @@ function App() {
                 <Route path="/sections" element={<Sections />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/loans" element={<Loans />} />
+                <Route path="/statistics" element={<Statistics />} />
               </Routes>
             </div>
           </div>

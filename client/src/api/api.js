@@ -127,4 +127,12 @@ export var accountApi = {
     ReturnedLoan(dataJSON) {
         return instance.post("account/loans/returned", dataJSON)
     },  
+
+    GetTotalStatistics() {
+        return instance.get("account/statistics/total")
+    }, 
+
+    GetLineChart(dataJSON) {
+        return instance.post("account/statistics/chart", dataJSON)
+    },  
 }

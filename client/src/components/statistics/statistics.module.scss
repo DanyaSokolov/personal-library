@@ -1,0 +1,88 @@
+.statistics {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .counts {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+
+        .count {
+            text-align: center;
+            padding: 1rem;
+            flex: 1;
+
+            .title {
+                margin-bottom: 0.5rem;
+            }
+
+                .indicator_wrap {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.5rem;
+ 
+                    .indicator {
+                        width: 1rem;
+                        height: 1rem;
+                        background-color: green;
+                        z-index: 1;
+                        margin: 0.5rem;
+                        border: solid 0.125rem rgb(255, 255, 255);
+                        border-radius: 1rem;
+                    }
+        
+                    .indicator::before {
+                        content: '';
+                        inset: 0;
+                        transform: scale(1);
+                    }
+
+                    .text {
+                        display: flex;
+                        gap: 0.5rem;
+                    }
+                }
+        }
+    }
+
+    .pies {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+
+        .pie {
+            padding: 1rem;
+            flex: 1;
+            text-align: center;
+
+            .title {
+                margin-bottom: 1rem;
+            }
+        }
+    }
+
+    .area {
+        padding: 1rem;
+        flex: 1;
+
+        .title {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+    }
+} 
+
+.form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+    margin: 3rem 0 1rem 0;
+} 
+
+.input_date {
+    width: 20rem;
+}
+
