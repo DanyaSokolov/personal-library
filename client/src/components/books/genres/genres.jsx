@@ -57,6 +57,7 @@ const useLocalState = () => {
     }
 
     useEffect(() => {
+        setTimeout(() => {window.scrollTo(0, 0)}, 0)
         dispatchApiGetGenres(search, offset, limit)
     }, [page])
 

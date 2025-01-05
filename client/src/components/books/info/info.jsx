@@ -55,6 +55,7 @@ const useLocalState = () => {
     let searchParamsBook_ID = Number(searchParams.get("id"))
 
     useEffect(() => {
+        setTimeout(() => { window.scrollTo(0, 0) }, 0)
         dispatchApiGetBook()
     }, [])
 
@@ -63,7 +64,7 @@ const useLocalState = () => {
             ID_Book,
             name,
             authors,
-            image, 
+            image,
             year_publish,
             house_publish,
             pages,
@@ -76,7 +77,12 @@ const useLocalState = () => {
             status,
             description,
             section,
-            // connection: { isDeletingFetch }
+            connection: { isDeletingFetch,
+                isBookFetch,
+                isEditingFetch,
+                isGradingFetch,
+                isAbsentFetch,
+                isAvailableFetch }
         },
         books: {
             add_info: { authors: authorsInfo, genres: genresInfo, sections: sectionsInfo },
@@ -219,7 +225,7 @@ const useLocalState = () => {
                 title: 'Invalid form',
                 position: "bottom-center",
             })
-        } else { 
+        } else {
             console.log(form)
             const actionRes = await dispatchApiEditBook(form)
             const promiseRes = unwrapResult(actionRes)
@@ -243,7 +249,7 @@ const useLocalState = () => {
     const {
         create_info: {
             users,
-            connection: { isLoanAddingInfoFetch }
+            connection: { isLoanAddingInfoFetch, isCreatingFetch }
         },
     } = useSelector((state) => state.loans)
 
@@ -303,14 +309,14 @@ const useLocalState = () => {
 
     const handleOpenModalLoan = async () => {
         await dispatchApiGetLoanAddingInfo()
-        openModalLoan() 
+        openModalLoan()
         setFormLoan({
             ID_Book: ID_Book ? ID_Book : null,
         })
     }
 
     const dispatchApiCreateLoan = async () => {
-        return isAuthDispatch(apiCreateLoan ,formLoan)
+        return isAuthDispatch(apiCreateLoan, formLoan)
     }
 
     const handleSubmitLoan = async () => {
@@ -343,7 +349,7 @@ const useLocalState = () => {
                 })
                 handleCloseModalLoan()
                 dispatchApiGetBook()
-            } 
+            }
         }
     }
 
@@ -365,7 +371,13 @@ const useLocalState = () => {
         description,
         section,
         dispatchApiDeleteBook,
-        // isDeletingFetch
+        isDeletingFetch,
+        isBookFetch,
+        isEditingFetch,
+        isGradingFetch,
+        isAbsentFetch,
+        isAvailableFetch,
+        isCreatingFetch,
         openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
         openedModal, handleCloseModal, handleOpenModal, isBookAddingInfoFetch, authorsInfo, genresInfo, sectionsInfo,
         dispatchApiSetStatusAbsentBook, dispatchApiSetStatusAvailableBook, handleGrade,
@@ -394,7 +406,13 @@ const BookInfo = () => {
         description,
         section,
         dispatchApiDeleteBook,
-        // isDeletingFetch
+        isDeletingFetch,
+        isBookFetch,
+        isEditingFetch,
+        isGradingFetch,
+        isAbsentFetch,
+        isAvailableFetch,
+        isCreatingFetch,
         openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
         openedModal, handleCloseModal, handleOpenModal, isBookAddingInfoFetch, authorsInfo, genresInfo, sectionsInfo,
         handleGrade, dispatchApiSetStatusAbsentBook, dispatchApiSetStatusAvailableBook,
@@ -412,7 +430,7 @@ const BookInfo = () => {
                 }}
                 className={styles.modal} opened={openedModalLoan} onClose={handleCloseModalLoan} title="Create loan">
                 {!isLoanAddingInfoFetch ?
-                    <form className={styles.formLoan}> 
+                    <form className={styles.formLoan}>
                         <Input.Wrapper withAsterisk error={errorsLoan.user} className={styles.input_wrap} label="User">
                             <Autocomplete
                                 rightSection={errorsLoan.user &&
@@ -424,21 +442,21 @@ const BookInfo = () => {
                                 placeholder="Enter user"
                                 data={users}
                                 limit={5}
-                                value={formLoan.user} 
+                                value={formLoan.user}
                                 onChange={(value) => (setFieldLoan('user', value))}
                                 className={styles.input}
                             />
                         </Input.Wrapper>
                         <DatesProvider settings={{ timezone: 'UTC' }}>
                             <DatePickerInput
-                            minDate={new Date()}
+                                minDate={new Date()}
                                 classNames={{
                                     input: styles.input_date,
                                 }}
                                 allowDeselect={true}
                                 value={formLoan.termin}
-                                onChange={value => { setFieldLoan('termin', value)}}
-                                label="Termin" 
+                                onChange={value => { setFieldLoan('termin', value) }}
+                                label="Termin"
                                 placeholder="Enter termin"
                             />
                         </DatesProvider>
@@ -450,7 +468,8 @@ const BookInfo = () => {
                                 <IconSquareRoundedPlus size="1rem"
                                 />
                             }
-                            variant="filled">Create
+                            variant="filled"
+                            loading={isCreatingFetch}>Create
                         </Button>
                     </form>
                     :
@@ -637,6 +656,7 @@ const BookInfo = () => {
                         </Box>
 
                         <Button
+                        loading={isEditingFetch}
                             onClick={handleSubmit}
                             className={styles.btn_submit}
                             rightSection={
@@ -648,12 +668,12 @@ const BookInfo = () => {
                     </form>
                     :
                     <Loader
-                        classNames={{
-                            root: styles.loader,
-                        }} color="blue" />
+                       color="blue" />
                 }
             </Modal>
-            <div className={styles.head}>
+            {!isBookFetch ?
+                <>
+                  <div className={styles.head}>
                 <div className={styles.title}>
                     <h2 className={styles.name}>{name}</h2>
                     <div className={styles.status}><div style={{ backgroundColor: status === 'Available' ? '#40c057' : status === 'Loaned' ? '#228be6' : '#868e96' }} className={styles.indicator}></div>{status}, last change {parsedLastStatusChange}</div>
@@ -664,12 +684,12 @@ const BookInfo = () => {
                             <Button rightSection={
                                 <IconTrash size="1rem" />
                             }
-                                // loading={isDeletingFetch}
+                                loading={isDeletingFetch}
                                 onClick={() => dispatchApiDeleteBook()} color='red' variant='light'>Delete</Button>
                             <Button rightSection={
                                 <IconMinus size="1rem" />
                             }
-                                onClick={dispatchApiSetStatusAbsentBook} color='grey' variant='light'>Absent</Button>
+                                onClick={dispatchApiSetStatusAbsentBook} color='grey' loading={isAbsentFetch} variant='light'>Absent</Button>
                             <Button rightSection={
                                 <IconEdit size="1rem" />
                             }
@@ -686,12 +706,12 @@ const BookInfo = () => {
                                 <Button rightSection={
                                     <IconTrash size="1rem" />
                                 }
-                                    // loading={isDeletingFetch}
+                                    loading={isDeletingFetch}
                                     onClick={() => dispatchApiDeleteBook()} color='red' variant='light'>Delete</Button>
                                 <Button rightSection={
                                     <IconPlus size="1rem" />
                                 }
-                                    onClick={dispatchApiSetStatusAvailableBook} color='green' variant='light'>Available</Button>
+                                    onClick={dispatchApiSetStatusAvailableBook} loading={isAvailableFetch} color='green' variant='light'>Available</Button>
                                 <Button rightSection={
                                     <IconEdit size="1rem" />
                                 }
@@ -699,10 +719,10 @@ const BookInfo = () => {
                             </>
                             :
                             <>
-                             <Button rightSection={
+                                <Button rightSection={
                                     <IconTrash size="1rem" />
                                 }
-                                    // loading={isDeletingFetch}
+                                    loading={isDeletingFetch}
                                     onClick={() => dispatchApiDeleteBook()} color='red' variant='light'>Delete</Button>
                                 <Button rightSection={
                                     <IconEdit size="1rem" />
@@ -742,6 +762,13 @@ const BookInfo = () => {
                     <div className={styles.item}><div className={styles.key}>Source</div><div className={styles.value}>{source ? source : "-"}</div></div>
                 </Paper>
             </div>
+                </>
+                :
+                <Loader
+                    classNames={{
+                        root: styles.loader,
+                    }} color="blue" />
+            }
         </div>
     );
 };

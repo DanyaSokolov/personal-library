@@ -83,7 +83,7 @@ func CreateLoan(c *gin.Context) {
 		e.Wrap("Something wrong with 'execCreateLoan' request", err, c)
 	}
 
-	_, err = db.Exec("Update Book SET Status = 'Loaned' WHERE ID_Book = ?", l.ID_Book)
+	_, err = db.Exec("Update Book SET Status = 'Loaned', Date_Last_Status_Change = ? WHERE ID_Book = ?", time.Now().UTC(), l.ID_Book)
 
 	if err != nil {
 		e.Wrap("Something wrong with 'execSetStatusLoanedBook' request", err, c)
@@ -301,7 +301,7 @@ func ReturnedLoan(c *gin.Context) {
 		e.Wrap("Something wrong with 'execUpdateLoan' request", err, c)
 	}
 
-	_, err = db.Exec("Update Book SET Status = 'Available' WHERE ID_Book = ?", l.ID_Book)
+	_, err = db.Exec("Update Book SET Status = 'Available', Date_Last_Status_Change = ? WHERE ID_Book = ?", time.Now().UTC(), l.ID_Book)
 
 	if err != nil {
 		e.Wrap("Something wrong with 'execUpdateBook' request", err, c)

@@ -40,6 +40,9 @@ const initialState = {
             isDeletingFetch: false,
             isBookFetch: true,
             isEditingFetch: false,
+            isAbsentFetch: false,
+            isAvailableFetch: false,
+            isGradingFetch: false,
         },
     },
     genres: {
@@ -128,7 +131,7 @@ export const booksSlice = createSlice({
                 state.books.connection.isBookAddingInfoFetch = false
             })
             .addCase(apiAddBook.pending, (state, _) => {
-                state.books.connection.isAddingFetch = false
+                state.books.connection.isAddingFetch = true
             })
             .addCase(apiAddBook.fulfilled, (state, _) => {
                 state.books.connection.isAddingFetch = false
@@ -137,52 +140,60 @@ export const booksSlice = createSlice({
                 state.books.connection.isAddingFetch = false
             })
             .addCase(apiDeleteBook.pending, (state, _) => {
-                // state.books.connection.isDeletingFetch = false
+                state.info.connection.isDeletingFetch = true
             })
             .addCase(apiDeleteBook.fulfilled, (state, _) => {
-                // state.books.connection.isDeletingFetch = false
+                state.info.connection.isDeletingFetch = false
             })
             .addCase(apiDeleteBook.rejected, (state, _) => {
-                // state.books.connection.isDeletingFetch = false
+                state.info.connection.isDeletingFetch = false
             })
             .addCase(apiGetBook.pending, (state, _) => {
-                // state.info.connection.isBookFetch = true
+                state.info.connection.isBookFetch = true
             })
             .addCase(apiGetBook.fulfilled, (state, action) => {
                 switch (action.payload.status) {
                     case "success":
-                        state.info = action.payload.data
+                        Object.assign(state.info, action.payload.data) 
                         break
                 }
-             
-                // state.info.connection.isBookFetch = false
+                state.info.connection.isBookFetch = false
             })
             .addCase(apiEditBook.pending, (state, _) => {
-                // state.info.connection.isEditingFetch = false
+                state.info.connection.isEditingFetch = true
             })
             .addCase(apiEditBook.fulfilled, (state, _) => { 
-                // state.info.connection.isEditingFetch = false 
+                state.info.connection.isEditingFetch = false 
             })
             .addCase(apiEditBook.rejected, (state, _) => {
-                // state.info.connection.isEditingFetch = false
+                state.info.connection.isEditingFetch = false
             })
             .addCase(apiSetStatusAbsentBook.pending, (state, _) => {
-                // state.info.connection.isEditingFetch = false
+                state.info.connection.isAbsentFetch = true
             })
             .addCase(apiSetStatusAbsentBook.fulfilled, (state, _) => { 
-                // state.info.connection.isEditingFetch = false 
+                state.info.connection.isAbsentFetch = false 
             })
             .addCase(apiSetStatusAbsentBook.rejected, (state, _) => {
-                // state.info.connection.isEditingFetch = false
+                state.info.connection.isAbsentFetch = true
+            })
+            .addCase(apiSetStatusAvailableBook.pending, (state, _) => {
+                state.info.connection.isAvailableFetch = true
+            })
+            .addCase(apiSetStatusAvailableBook.fulfilled, (state, _) => { 
+                state.info.connection.isAvailableFetch = false 
+            })
+            .addCase(apiSetStatusAvailableBook.rejected, (state, _) => {
+                state.info.connection.isAvailableFetch = false
             })
             .addCase(apiSetGradeBook.pending, (state, _) => {
-                // state.info.connection.isEditingFetch = false
+                state.info.connection.isGradingFetch = true
             })
             .addCase(apiSetGradeBook.fulfilled, (state, _) => { 
-                // state.info.connection.isEditingFetch = false 
+                state.info.connection.isGradingFetch = false 
             })
             .addCase(apiSetGradeBook.rejected, (state, _) => {
-                // state.info.connection.isEditingFetch = false
+                state.info.connection.isGradingFetch = false
             })
             .addCase(apiGetGenres.pending, (state, _) => { 
                 state.genres.connection.isGenresFetch = true

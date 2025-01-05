@@ -56,6 +56,7 @@ const useLocalState = () => {
     }
 
     useEffect(() => {
+        setTimeout(() => {window.scrollTo(0, 0)}, 0)
         dispatchApiGetAuthors(search, offset, limit)
     }, [page])
 
@@ -120,7 +121,7 @@ const useLocalState = () => {
             if (promiseRes.status === "success") {
                 notifications.show({
                     color: "green",
-                    title: 'Genre successfully added',
+                    title: 'Author successfully added',
                     position: "bottom-center",
                 })
             }

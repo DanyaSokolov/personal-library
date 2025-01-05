@@ -58,6 +58,7 @@ const useLocalState = () => {
     }
 
     useEffect(() => {
+        setTimeout(() => {window.scrollTo(0, 0)}, 0)
         dispatchApiGetSections(search, offset, limit)
     }, [page])
 

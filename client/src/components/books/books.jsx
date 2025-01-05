@@ -48,6 +48,7 @@ const useLocalState = () => {
     }
 
     useEffect(() => {
+        setTimeout(() => {window.scrollTo(0, 0)}, 0)
         dispatchApiGetBooks(search, filter, offset, limit)
     }, [page, filter])
 
@@ -183,7 +184,8 @@ const useLocalState = () => {
                     position: "bottom-center",
                 })
                 handleCloseModal()
-            }
+                dispatchApiGetBooks(search, filter, offset, limit)
+            } 
         }
     }
 
@@ -204,6 +206,8 @@ const Books = () => {
     const { isBooksFetch, books, search, setSearch, filter, handleFilter, page, setPage, pagesCount, offset, limit,
         dispatchApiGetBooks, booksNotFound, openedCollapse, toggleCollapse, form, setField, errors, handleSubmit,
         openedModal, handleCloseModal, handleOpenModal, isAddingFetch, isBookAddingInfoFetch, authors, genres, sections } = useLocalState()
+
+        console.log(isAddingFetch)
 
     return (
         <div className={styles.books}>
