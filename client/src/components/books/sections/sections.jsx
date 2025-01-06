@@ -35,14 +35,32 @@ const useLocalState = () => {
     }
 
     const dispatchApiAddSection = async (form) => {
-        await isAuthDispatch(apiAddSection, form)
+        const actionRes = await isAuthDispatch(apiAddSection, form)
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "green",
+                title: 'Section successfully added', 
+                position: "bottom-center",
+            })
+        }
         handleCloseModal()
         dispatchApiGetSections(search, offset, limit)
     }
 
     const dispatchApiDeleteSection = async (name) => {
         dispatch(setDeletingSectionName(name))
-        await isAuthDispatch(apiDeleteSection, { name })
+        const actionRes = await isAuthDispatch(apiDeleteSection, { name })
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "gray",
+                title: 'Section deleted', 
+                position: "bottom-center", 
+            })
+        }
         dispatchApiGetSections(search, offset, limit)
     }
 

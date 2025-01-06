@@ -36,14 +36,32 @@ const useLocalState = () => {
     }
 
     const dispatchApiAddUser = async (form) => {
-        await isAuthDispatch(apiAddUser, form)
+        const actionRes = await isAuthDispatch(apiAddUser, form)
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "green",
+                title: 'User successfully added', 
+                position: "bottom-center",
+            })
+        }
         handleCloseModal()
         dispatchApiGetUsers(search, offset, limit)
     }
 
     const dispatchApiDeleteUser = async (ID_User) => {
         dispatch(setDeletingUserID(ID_User))
-        await isAuthDispatch(apiDeleteUser, { ID_User })
+        const actionRes = await isAuthDispatch(apiDeleteUser, { ID_User })
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "gray",
+                title: 'User deleted',  
+                position: "bottom-center", 
+            })
+        }
         dispatchApiGetUsers(search, offset, limit)
     }
 
@@ -59,6 +77,7 @@ const useLocalState = () => {
     }
 
     useEffect(() => {
+        setTimeout(() => {window.scrollTo(0, 0)}, 0)
         dispatchApiGetUsers(search, offset, limit)
     }, [page])
 

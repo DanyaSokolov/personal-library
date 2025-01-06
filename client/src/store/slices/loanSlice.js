@@ -28,7 +28,7 @@ const initialState = {
         date_return: 0,
         connection: {
             isInfoFetch: true,
-            isReturnedLoan: false
+            isReturningLoan: false
         }
     }
 }
@@ -87,13 +87,13 @@ export const loansSlice = createSlice({
                 state.loan_info.connection.isInfoFetch = false
             })
             .addCase(apiReturnedLoan.pending, (state, _) => {
-                state.loan_info.connection.isReturnedLoan = true
+                state.loan_info.connection.isReturningLoan = true
             })
             .addCase(apiReturnedLoan.fulfilled, (state, _) => {
-                state.loan_info.connection.isReturnedLoan = false
+                state.loan_info.connection.isReturningLoan = false
             })
             .addCase(apiReturnedLoan.rejected, (state, _) => {
-                state.loan_info.connection.isReturnedLoan = false
+                state.loan_info.connection.isReturningLoan = false
             })
     }
 })

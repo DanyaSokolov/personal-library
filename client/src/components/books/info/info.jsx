@@ -39,14 +39,32 @@ const useLocalState = () => {
     }
 
     const handleGrade = async (grade) => {
-        await dispatchApiSetGradeBook(grade)
+        const actionRes = await dispatchApiSetGradeBook(grade)
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "green", 
+                title: 'Grade changed',  
+                position: "bottom-center",  
+            })
+        }
         dispatch(setGrade(grade))
     }
 
     const navigate = useNavigate()
 
     const dispatchApiDeleteBook = async () => {
-        await isAuthDispatch(apiDeleteBook, { ID_Book: searchParamsBook_ID })
+        const actionRes = await isAuthDispatch(apiDeleteBook, { ID_Book: searchParamsBook_ID })
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "gray", 
+                title: 'Book deleted',  
+                position: "bottom-center", 
+            })
+        }
         navigate('/')
     }
 
@@ -226,7 +244,6 @@ const useLocalState = () => {
                 position: "bottom-center",
             })
         } else {
-            console.log(form)
             const actionRes = await dispatchApiEditBook(form)
             const promiseRes = unwrapResult(actionRes)
 
@@ -337,7 +354,6 @@ const useLocalState = () => {
                 position: "bottom-center",
             })
         } else {
-            console.log(formLoan)
             const actionRes = await dispatchApiCreateLoan()
             const promiseRes = unwrapResult(actionRes)
 

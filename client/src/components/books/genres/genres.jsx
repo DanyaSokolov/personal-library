@@ -34,14 +34,32 @@ const useLocalState = () => {
     }
 
     const dispatchApiAddGenre = async () => {
-        await isAuthDispatch(apiAddGenre, form)
+        const actionRes = await isAuthDispatch(apiAddGenre, form)
+        const promiseRes = unwrapResult(actionRes)
+
+            if (promiseRes.status === "success") {
+                notifications.show({
+                    color: "green",
+                    title: 'Genre successfully added',
+                    position: "bottom-center",
+                })
+            }
         handleCloseModal()
         dispatchApiGetGenres(search, offset, limit)
     }
 
     const dispatchApiDeleteGenre = async (name) => {
         dispatch(setDeletingGenreName(name))
-        await isAuthDispatch(apiDeleteGenre, { name })
+        const actionRes = await isAuthDispatch(apiDeleteGenre, { name })
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "gray",
+                title: 'Genre deleted', 
+                position: "bottom-center",
+            })
+        }
         dispatchApiGetGenres(search, offset, limit)
     }
 
@@ -117,15 +135,6 @@ const useLocalState = () => {
             })
         } else {
             const actionRes = await dispatchApiAddGenre(form)
-            const promiseRes = unwrapResult(actionRes)
-
-            if (promiseRes.status === "success") {
-                notifications.show({
-                    color: "green",
-                    title: 'Genre successfully added',
-                    position: "bottom-center",
-                })
-            }
         }
     }
 

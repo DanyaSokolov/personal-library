@@ -33,14 +33,32 @@ const useLocalState = () => {
     }
 
     const dispatchApiAddAuthor = async () => {
-        await isAuthDispatch(apiAddAuthor, form)
+        const actionRes = await isAuthDispatch(apiAddAuthor, form)
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "green",
+                title: 'Author successfully added', 
+                position: "bottom-center",
+            })
+        }
         handleCloseModal()
         dispatchApiGetAuthors(search, offset, limit)
     }
 
     const dispatchApiDeleteAuthor = async (name) => {
         dispatch(setDeletingAuthorName(name))
-        await isAuthDispatch(apiDeleteAuthor, { name })
+        const actionRes = await isAuthDispatch(apiDeleteAuthor, { name })
+        const promiseRes = unwrapResult(actionRes)
+
+        if (promiseRes.status === "success") {
+            notifications.show({
+                color: "gray",
+                title: 'Author deleted', 
+                position: "bottom-center", 
+            })
+        }
         dispatchApiGetAuthors(search, offset, limit)
     }
 

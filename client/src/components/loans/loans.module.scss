@@ -103,7 +103,6 @@
     margin-top: 1rem;
 }
 
-
 .cell {
     display: flex; 
     gap: 1rem;
@@ -123,5 +122,10 @@
 .arrow_bottom {
     display: flex;
     justify-content: center;
+    margin-top: 1rem;
+}
+
+.no_grade {
+    text-align: center;
     margin-top: 1rem;
 }

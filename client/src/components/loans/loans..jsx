@@ -39,11 +39,9 @@ const useLocalState = () => {
             status,
             number_grade,
             date_return,
-            connection: { isInfoFetch }
+            connection: { isInfoFetch, isReturningLoan }
         }
     } = useSelector((state) => state.loans);
- 
-    console.log(loans)
 
     const parsedDateLoan = date_loan ? new Date(date_loan).getFullYear() + "-" + ('0' + (new Date(date_loan).getMonth() + 1)).slice(-2) + "-" + ('0' + new Date(date_loan).getDate()).slice(-2) : "-";
     const parsedTerminLoan = termin_loan ? new Date(termin_loan).getFullYear() + "-" + ('0' + (new Date(termin_loan).getMonth() + 1)).slice(-2) + "-" + ('0' + new Date(termin_loan).getDate()).slice(-2) : "-";
@@ -65,6 +63,7 @@ const useLocalState = () => {
     }
 
     useEffect(() => {
+        setTimeout(() => {window.scrollTo(0, 0)}, 0)
         dispatchApiGetLoans(search, filter, offset, limit)
     }, [page, filter])
 
@@ -100,7 +99,6 @@ const useLocalState = () => {
     }
 
     const dispatchApiReturnedLoan = async () => {
-        console.log(ID_Book, new Date(date_loan),form.grade)
         return isAuthDispatch(apiReturnedLoan, { ID_Book, date_loan: new Date(date_loan), grade: form.grade })
     }
  
@@ -128,7 +126,7 @@ const useLocalState = () => {
     return {
         isLoansFetch, loans, search, setSearch, filter, handleFilter, page, setPage, pagesCount, offset, limit,
         dispatchApiGetLoans, loansNotFound, openedModal, handleOpenModal, handleCloseModal, form, setField, isInfoFetch,
-        handleSubmit, parsedDateLoan, parsedTerminLoan, parsedDateReturn, status, number_grade
+        handleSubmit, parsedDateLoan, parsedTerminLoan, parsedDateReturn, status, number_grade, isReturningLoan
     }
 
 }
@@ -137,7 +135,7 @@ const Loans = () => {
 
     const { isLoansFetch, loans, search, setSearch, filter, handleFilter, page, setPage, pagesCount, offset, limit,
         dispatchApiGetLoans, loansNotFound, openedModal, handleOpenModal, handleCloseModal, form, setField, isInfoFetch,
-        handleSubmit, parsedDateLoan, parsedTerminLoan, parsedDateReturn, status, number_grade } = useLocalState()
+        handleSubmit, parsedDateLoan, parsedTerminLoan, parsedDateReturn, status, number_grade, isReturningLoan } = useLocalState()
 
     return (
         <div className={styles.loans}>
@@ -148,9 +146,9 @@ const Loans = () => {
                     title: styles.title_form,
                 }}
                 className={styles.modal} opened={openedModal} onClose={handleCloseModal} title="Loan info">
-                {/* {!isInfoFetch ? */}
-                {status === 'Borrowed'  ?
-                    <>
+                {!isInfoFetch ?
+                status === 'Borrowed'  ?
+                    <div>
                        <Paper
                     classNames={{
                         root: styles.cell,
@@ -159,11 +157,29 @@ const Loans = () => {
                     <IconArrowNarrowRight ></IconArrowNarrowRight>
                     <div>{parsedTerminLoan}</div> 
                 </Paper>
-                    </>
+                  <form className={styles.formLoan}>
+                  <Input.Wrapper className={styles.input_wrap} label="Grade - optional">
+                      <NumberInput
+                          allowDecimal={false}
+                          value={form.grade}
+                          onChange={value => setField('grade', value)}
+                          min={0} max={10} className={styles.input} placeholder='Enter grade' />
+                  </Input.Wrapper>
+                  <Button
+                     rightSection={ 
+                      <IconCheck  size="1rem"/> 
+                  }
+                          onClick={handleSubmit} 
+                          className={styles.btn_submit}
+                          variant="filled"
+                          loading={isReturningLoan}>Returned
+                      </Button>
+              </form>
+              </div>
                     :
                     status === 'Expired' 
                     ?
-                    <>
+                    <div>
                       <Paper
                     classNames={{
                         root: styles.cell,
@@ -172,50 +188,49 @@ const Loans = () => {
                     <IconArrowNarrowRight ></IconArrowNarrowRight>
                     <div style={{color: '#fa5252'}}>{parsedTerminLoan}</div> 
                 </Paper>
-                <div className={styles.arrow_bottom}>
-                </div>
-                    </>
+                <form className={styles.formLoan}>
+                  <Input.Wrapper className={styles.input_wrap} label="Grade - optional">
+                      <NumberInput
+                          allowDecimal={false}
+                          value={form.grade}
+                          onChange={value => setField('grade', value)}
+                          min={0} max={10} className={styles.input} placeholder='Enter grade' />
+                  </Input.Wrapper>
+                  <Button
+                     rightSection={ 
+                      <IconCheck  size="1rem"/> 
+                  }
+                          onClick={handleSubmit} 
+                          className={styles.btn_submit}
+                          variant="filled" loading={isReturningLoan}>Returned
+                      </Button>
+              </form>
+              </div>
                     :
                     status === 'Returned' 
-                    &&
+                    ?
                     <>
                      <Paper
-                    classNames={{
+                    classNames={{ 
                         root: styles.cell,
                     }} radius="md" p="xs">
                     <div>{parsedDateLoan}</div>
                     <IconArrowNarrowRight ></IconArrowNarrowRight>
                     <div>{parsedDateReturn}</div> 
                 </Paper> 
+                {number_grade ? 
                 <Rating className={styles.rating} readOnly fractions={2} value={number_grade / 2} size="lg" />
+                : <div className={styles.no_grade}>No grade from this user</div>
+                }
                     </>
-                }
-                {status !== 'Returned'
-                &&
-                <form className={styles.formLoan}>
-                    <Input.Wrapper className={styles.input_wrap} label="Grade - optional">
-                        <NumberInput
-                            allowDecimal={false}
-                            value={form.grade}
-                            onChange={value => setField('grade', value)}
-                            min={0} max={10} className={styles.input} placeholder='Enter grade' />
-                    </Input.Wrapper>
-                    <Button
-                       rightSection={ 
-                        <IconCheck  size="1rem"/> 
-                    }
-                            onClick={handleSubmit} 
-                            className={styles.btn_submit}
-                            variant="filled">Returned
-                        </Button>
-                </form>
-                }
-                {/* :
-                    <Loader
-                        classNames={{
-                            root: styles.loader,
-                        }} color="blue" /> */}
-                {/* } */}
+                    :
+                    <></>
+                :
+                <Loader 
+                classNames={{
+                    root: styles.loader,
+                }} color="blue" /> 
+            }
             </Modal>
             <div className={styles.navigation}>
                 <div className={styles.search}>
